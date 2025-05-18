@@ -1,0 +1,21 @@
+{
+  "license": "ISC",
+  "scripts": {
+    "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
+    "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
+    "idl:generate": "./generate-idls.sh",
+    "test": "jest --setupFiles dotenv/config --detectOpenHandles"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.31.1"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0",
+    "@types/jest": "^29.5.14",
+    "dotenv": "^16.5.0",
+    "jest": "^29.7.0",
+    "prettier": "^2.6.2",
+    "ts-jest": "^29.3.4",
+    "typescript": "^5.7.3"
+  }
+}
