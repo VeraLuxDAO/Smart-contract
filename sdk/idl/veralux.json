@@ -1,5 +1,5 @@
 {
-  "address": "5GS6eXCiEEgr44phBzwJq3MMVtUvjQ3PGpcR1tceXwEj",
+  "address": "xikFFfUa48SD9UZcHjRmkaSKuso7WXQXyxRP4t5EEZY",
   "metadata": {
     "name": "veralux",
     "version": "0.1.0",
@@ -8,19 +8,411 @@
   },
   "instructions": [
     {
-      "name": "initialize",
+      "name": "buy_presale",
       "discriminator": [
-        175,
-        175,
-        109,
-        31,
-        13,
-        152,
-        155,
-        237
+        113,
+        18,
+        193,
+        68,
+        35,
+        36,
+        215,
+        8
       ],
-      "accounts": [],
+      "accounts": [
+        {
+          "name": "purchaser",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "presale_purchase",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "purchaser"
+              }
+            ]
+          }
+        },
+        {
+          "name": "purchaser_usdt",
+          "writable": true
+        },
+        {
+          "name": "treasury_usdt",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "usdt_amount",
+          "type": "u64"
+        },
+        {
+          "name": "kyc_verified",
+          "type": "bool"
+        }
+      ]
+    },
+    {
+      "name": "claim_presale",
+      "discriminator": [
+        82,
+        240,
+        122,
+        5,
+        109,
+        66,
+        86,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "presale_purchase",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "treasury_token_account",
+          "writable": true
+        },
+        {
+          "name": "treasury_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  116,
+                  114,
+                  101,
+                  97,
+                  115,
+                  117,
+                  114,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "global.treasury_wallet",
+                "account": "GlobalState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
       "args": []
+    },
+    {
+      "name": "init_global",
+      "discriminator": [
+        44,
+        238,
+        77,
+        253,
+        76,
+        182,
+        192,
+        162
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  103,
+                  108,
+                  111,
+                  98,
+                  97,
+                  108
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "veralux_token_mint",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "treasury_wallet",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "init_presale",
+      "discriminator": [
+        172,
+        248,
+        47,
+        226,
+        223,
+        52,
+        94,
+        217
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "token_price_in_usdt",
+          "type": "u64"
+        },
+        {
+          "name": "max_per_wallet",
+          "type": "u64"
+        },
+        {
+          "name": "total_presale_cap",
+          "type": "u64"
+        },
+        {
+          "name": "launch_timestamp",
+          "type": "i64"
+        },
+        {
+          "name": "vesting",
+          "type": {
+            "defined": {
+              "name": "PresaleVestingScheduel"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_global",
+      "discriminator": [
+        90,
+        152,
+        240,
+        21,
+        199,
+        38,
+        72,
+        20
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        }
+      ],
+      "args": [
+        {
+          "name": "treasury_usdt_account",
+          "type": {
+            "option": "pubkey"
+          }
+        },
+        {
+          "name": "treasury_wallet",
+          "type": {
+            "option": "pubkey"
+          }
+        }
+      ]
+    },
+    {
+      "name": "update_presale",
+      "discriminator": [
+        9,
+        223,
+        20,
+        184,
+        183,
+        199,
+        90,
+        226
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "token_price_in_usdt",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "max_per_wallet",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "total_presale_cap",
+          "type": {
+            "option": "u64"
+          }
+        },
+        {
+          "name": "launch_timestamp",
+          "type": {
+            "option": "i64"
+          }
+        },
+        {
+          "name": "new_vesting",
+          "type": {
+            "option": {
+              "defined": {
+                "name": "PresaleVestingScheduel"
+              }
+            }
+          }
+        },
+        {
+          "name": "presale_active",
+          "type": {
+            "option": "bool"
+          }
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "GlobalState",
+      "discriminator": [
+        163,
+        46,
+        74,
+        168,
+        216,
+        123,
+        133,
+        98
+      ]
+    },
+    {
+      "name": "PresalePurchase",
+      "discriminator": [
+        34,
+        110,
+        127,
+        240,
+        83,
+        219,
+        152,
+        227
+      ]
     }
   ],
   "errors": [
@@ -28,6 +420,166 @@
       "code": 6000,
       "name": "InvalidAuthority",
       "msg": "Invalid authority"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidAdmin",
+      "msg": "Invalid admin"
+    },
+    {
+      "code": 6002,
+      "name": "PresaleAlreadyInitialized",
+      "msg": "Presale already initialized"
+    },
+    {
+      "code": 6003,
+      "name": "PresaleNotActive",
+      "msg": "Presale not active"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidTreasury",
+      "msg": "Invalid treasury"
+    },
+    {
+      "code": 6005,
+      "name": "ArithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6006,
+      "name": "PresaleSupplyExceeded",
+      "msg": "Presale supply exceeded"
+    },
+    {
+      "code": 6007,
+      "name": "KYCRequired",
+      "msg": "KYC required"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidUser",
+      "msg": "Invalid user"
+    },
+    {
+      "code": 6009,
+      "name": "PresaleNotStarted",
+      "msg": "Presale not started"
+    },
+    {
+      "code": 6010,
+      "name": "PresaleAlreadyClaimed",
+      "msg": "Presale already claimed"
+    },
+    {
+      "code": 6011,
+      "name": "NothingToClaim",
+      "msg": "Nothing to claim"
+    },
+    {
+      "code": 6012,
+      "name": "InvalidUserTokenAccount",
+      "msg": "Invalid user token account"
+    },
+    {
+      "code": 6013,
+      "name": "PresaleEnded",
+      "msg": "Presale ended"
+    },
+    {
+      "code": 6014,
+      "name": "InvalidTreasuryTokenAccount",
+      "msg": "Invalid treasury token account"
+    }
+  ],
+  "types": [
+    {
+      "name": "GlobalState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "launch_timestamp",
+            "type": "i64"
+          },
+          {
+            "name": "presale_total_sold",
+            "type": "u64"
+          },
+          {
+            "name": "token_price_in_usdt",
+            "type": "u64"
+          },
+          {
+            "name": "max_per_wallet",
+            "type": "u64"
+          },
+          {
+            "name": "total_presale_cap",
+            "type": "u64"
+          },
+          {
+            "name": "presale_vesting",
+            "type": {
+              "defined": {
+                "name": "PresaleVestingScheduel"
+              }
+            }
+          },
+          {
+            "name": "treasury_usdt_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasury_wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "presale_active",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PresalePurchase",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "total_purchased",
+            "type": "u64"
+          },
+          {
+            "name": "total_claimed",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PresaleVestingScheduel",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initial_unlock_pct",
+            "type": "u8"
+          },
+          {
+            "name": "weekly_unlock_pct",
+            "type": "u8"
+          }
+        ]
+      }
     }
   ]
 }

@@ -4,4 +4,32 @@ use anchor_lang::prelude::*;
 pub enum VeraluxError {
     #[msg("Invalid authority")]
     InvalidAuthority,
+    #[msg("Invalid admin")]
+    InvalidAdmin,
+    #[msg("Presale already initialized")]
+    PresaleAlreadyInitialized,
+    #[msg("Presale not active")]
+    PresaleNotActive,
+    #[msg("Invalid treasury")]
+    InvalidTreasury,
+    #[msg("Arithmetic overflow")]
+    ArithmeticOverflow,
+    #[msg("Presale supply exceeded")]
+    PresaleSupplyExceeded,
+    #[msg("KYC required")]
+    KYCRequired,
+    #[msg("Invalid user")]
+    InvalidUser,
+    #[msg("Presale not started")]
+    PresaleNotStarted,
+    #[msg("Presale already claimed")]
+    PresaleAlreadyClaimed,
+    #[msg("Nothing to claim")]
+    NothingToClaim,
+    #[msg("Invalid user token account")]
+    InvalidUserTokenAccount,
+    #[msg("Presale ended")]
+    PresaleEnded,
+    #[msg("Invalid treasury token account")]
+    InvalidTreasuryTokenAccount,
 }
