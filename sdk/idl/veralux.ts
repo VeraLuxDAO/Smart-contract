@@ -231,6 +231,63 @@ export type Veralux = {
       ]
     },
     {
+      "name": "initMultisig",
+      "discriminator": [
+        119,
+        130,
+        22,
+        116,
+        114,
+        61,
+        124,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "owners",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "initPresale",
       "discriminator": [
         172,
@@ -323,6 +380,59 @@ export type Veralux = {
       ]
     },
     {
+      "name": "updateMultisig",
+      "discriminator": [
+        152,
+        192,
+        112,
+        152,
+        120,
+        184,
+        150,
+        59
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "newOwners",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "newThreshold",
+          "type": "u8"
+        }
+      ]
+    },
+    {
       "name": "updatePresale",
       "discriminator": [
         9,
@@ -405,6 +515,19 @@ export type Veralux = {
         123,
         133,
         98
+      ]
+    },
+    {
+      "name": "multisigState",
+      "discriminator": [
+        63,
+        19,
+        203,
+        218,
+        31,
+        61,
+        159,
+        8
       ]
     },
     {
@@ -496,6 +619,31 @@ export type Veralux = {
       "code": 6014,
       "name": "invalidTreasuryTokenAccount",
       "msg": "Invalid treasury token account"
+    },
+    {
+      "code": 6015,
+      "name": "invalidOwnersCount",
+      "msg": "Invalid owners count"
+    },
+    {
+      "code": 6016,
+      "name": "invalidThreshold",
+      "msg": "Invalid threshold"
+    },
+    {
+      "code": 6017,
+      "name": "invalidMultisigAdmin",
+      "msg": "Invalid multisig admin"
+    },
+    {
+      "code": 6018,
+      "name": "insufficientSigners",
+      "msg": "Unauthorized: Insufficient signers for multisig operation"
+    },
+    {
+      "code": 6019,
+      "name": "signerNotOwner",
+      "msg": "Unauthorized: Signer is not a multisig owner"
     }
   ],
   "types": [
@@ -547,6 +695,28 @@ export type Veralux = {
           {
             "name": "presaleActive",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "multisigState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "admin",
+            "type": "pubkey"
+          },
+          {
+            "name": "owners",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
           }
         ]
       }

@@ -32,4 +32,14 @@ pub enum VeraluxError {
     PresaleEnded,
     #[msg("Invalid treasury token account")]
     InvalidTreasuryTokenAccount,
+    #[msg("Invalid owners count")]
+    InvalidOwnersCount,
+    #[msg("Invalid threshold")]
+    InvalidThreshold,
+    #[msg("Invalid multisig admin")]
+    InvalidMultisigAdmin,
+    #[msg("Unauthorized: Insufficient signers for multisig operation")]
+    InsufficientSigners,
+    #[msg("Unauthorized: Signer is not a multisig owner")]
+    SignerNotOwner,
 }

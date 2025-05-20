@@ -4,6 +4,7 @@ pub mod constraints;
 pub mod errors;
 pub mod global;
 pub mod lp_staking;
+pub mod multisig;
 pub mod presale;
 pub mod staking;
 
@@ -11,6 +12,7 @@ pub use constraints::*;
 pub use errors::*;
 pub use global::*;
 pub use lp_staking::*;
+pub use multisig::*;
 pub use presale::*;
 
 declare_id!("xikFFfUa48SD9UZcHjRmkaSKuso7WXQXyxRP4t5EEZY");
@@ -79,5 +81,21 @@ pub mod veralux {
 
     pub fn claim_presale(ctx: Context<ClaimPresaleCtx>) -> Result<()> {
         ClaimPresaleCtx::handler(ctx)
+    }
+
+    pub fn init_multisig(
+        ctx: Context<InitMultisigCtx>,
+        owners: Vec<Pubkey>,
+        threshold: u8,
+    ) -> Result<()> {
+        InitMultisigCtx::handler(ctx, owners, threshold)
+    }
+
+    pub fn update_multisig(
+        ctx: Context<UpdateMultisigCtx>,
+        new_owners: Vec<Pubkey>,
+        new_threshold: u8,
+    ) -> Result<()> {
+        UpdateMultisigCtx::handler(ctx, new_owners, new_threshold)
     }
 }

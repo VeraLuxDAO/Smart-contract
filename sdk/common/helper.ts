@@ -27,6 +27,8 @@ import {
 export const GLOBAL_SEED = "global";
 export const PRESALE_SEED = "presale";
 export const TREASURY_SEED = "treasury";
+export const MULTISIG_SEED = "multisig";
+
 export type SolanaProvider = {
   connection: Connection;
   wallet: Wallet;
@@ -48,6 +50,11 @@ export class MockFactory {
     public backendWallet: Wallet,
     public treasuryWallet: Wallet,
     public userWallet: Wallet,
+    public owner1: Wallet,
+    public owner2: Wallet,
+    public owner3: Wallet,
+    public owner4: Wallet,
+    public owner5: Wallet,
     public tokenMint: PublicKey,
     public usdtMint: PublicKey
   ) {
@@ -70,6 +77,36 @@ export class MockFactory {
     const userWallet = new Wallet(
       Keypair.fromSecretKey(
         Uint8Array.from(JSON.parse(process.env.USER_WALLET || "[]"))
+      )
+    );
+
+    const owner1 = new Wallet(
+      Keypair.fromSecretKey(
+        Uint8Array.from(JSON.parse(process.env.OWNER1_WALLET || "[]"))
+      )
+    );
+
+    const owner2 = new Wallet(
+      Keypair.fromSecretKey(
+        Uint8Array.from(JSON.parse(process.env.OWNER2_WALLET || "[]"))
+      )
+    );
+
+    const owner3 = new Wallet(
+      Keypair.fromSecretKey(
+        Uint8Array.from(JSON.parse(process.env.OWNER3_WALLET || "[]"))
+      )
+    );
+
+    const owner4 = new Wallet(
+      Keypair.fromSecretKey(
+        Uint8Array.from(JSON.parse(process.env.OWNER4_WALLET || "[]"))
+      )
+    );
+
+    const owner5 = new Wallet(
+      Keypair.fromSecretKey(
+        Uint8Array.from(JSON.parse(process.env.OWNER5_WALLET || "[]"))
       )
     );
 
@@ -129,6 +166,11 @@ export class MockFactory {
       backendWallet,
       treasuryWallet,
       userWallet,
+      owner1,
+      owner2,
+      owner3,
+      owner4,
+      owner5,
       tokenMint,
       usdtMint
     );
