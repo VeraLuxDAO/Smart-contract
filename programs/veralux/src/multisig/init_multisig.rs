@@ -1,19 +1,26 @@
 use anchor_lang::prelude::*;
 
-use crate::{VeraluxError, MULTISIG_SEED};
+use crate::{GlobalState, VeraluxError, MULTISIG_SEED};
 
 use super::MultisigState;
 
 #[derive(Accounts)]
 pub struct InitMultisigCtx<'info> {
     #[account(mut)]
-    pub payer: Signer<'info>,
+    pub signer: Signer<'info>,
+
+    #[account(
+        mut,
+        constraint = !global.paused @ VeraluxError::Paused,
+        constraint = global.admin == signer.key() @ VeraluxError::InvalidAdmin
+    )]
+    pub global: Account<'info, GlobalState>,
 
     #[account(
         init,
-        payer = payer,
+        payer = signer,
         space = 8 + MultisigState::INIT_SPACE,
-        seeds = [MULTISIG_SEED],
+        seeds = [MULTISIG_SEED, signer.key().as_ref()],
         bump,
     )]
     pub multisig: Account<'info, MultisigState>,
@@ -37,7 +44,10 @@ impl InitMultisigCtx<'_> {
         );
 
         let multisig = &mut ctx.accounts.multisig;
-        multisig.admin = ctx.accounts.payer.key();
+        require!(
+            owners[0] == ctx.accounts.signer.key(),
+            VeraluxError::InvalidMultisigAdmin
+        );
         multisig.owners = owners;
         multisig.threshold = threshold;
         Ok(())

@@ -24,10 +24,10 @@ import {
   TokenStandard,
 } from "@metaplex-foundation/mpl-token-metadata";
 
-export const GLOBAL_SEED = "global";
-export const PRESALE_SEED = "presale";
-export const TREASURY_SEED = "treasury";
-export const MULTISIG_SEED = "multisig";
+export const GLOBAL_SEED = "global-authority";
+export const PRESALE_SEED = "presale-authority";
+export const TREASURY_SEED = "treasury-authority";
+export const MULTISIG_SEED = "multisig-authority";
 
 export type SolanaProvider = {
   connection: Connection;

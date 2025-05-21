@@ -2,10 +2,40 @@ use anchor_lang::prelude::*;
 
 #[error_code]
 pub enum VeraluxError {
+    /// Global errors
+    #[msg("Contract is paused")]
+    Paused,
+    #[msg("Invalid global admin")]
+    InvalidAdmin,
+
+    /// Governance errors
+    #[msg("Description too long")]
+    DescriptionTooLong,
+    #[msg("Too many proposal values")]
+    TooManyProposalValues,
+
+    /// Utility errors
+    #[msg("Reentrancy guard triggered: Operation already in progress")]
+    ReentrancyGuardTriggered,
+
+    /// Authorization errors
+    #[msg("Unauthorized: Multisig admin is not the first owner")]
+    UnauthorizedMultisig,
+    #[msg("Unauthorized: Insufficient signers for multisig operation")]
+    InsufficientSigners,
+    #[msg("Unauthorized: Signer is not a multisig owner")]
+    SignerNotOwner,
+
+    /// Limit
+    #[msg("Time lock requirement not met")]
+    TimeLockNotMet,
+    #[msg("Invalid threshold")]
+    InvalidThreshold,
+    #[msg("Too few owners in multisig")]
+    TooFewOwners,
+
     #[msg("Invalid authority")]
     InvalidAuthority,
-    #[msg("Invalid admin")]
-    InvalidAdmin,
     #[msg("Presale already initialized")]
     PresaleAlreadyInitialized,
     #[msg("Presale not active")]
@@ -34,12 +64,14 @@ pub enum VeraluxError {
     InvalidTreasuryTokenAccount,
     #[msg("Invalid owners count")]
     InvalidOwnersCount,
-    #[msg("Invalid threshold")]
-    InvalidThreshold,
+    
     #[msg("Invalid multisig admin")]
     InvalidMultisigAdmin,
-    #[msg("Unauthorized: Insufficient signers for multisig operation")]
-    InsufficientSigners,
-    #[msg("Unauthorized: Signer is not a multisig owner")]
-    SignerNotOwner,
+
+    #[msg("Staking amount is zero")]
+    StakingAmountZero,
+    #[msg("Invalid staking tier")]
+    InvalidStakingTier,
+    #[msg("Unauthorized")]
+    Unauthorized,
 }

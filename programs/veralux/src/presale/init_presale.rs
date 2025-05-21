@@ -1,8 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{GlobalState, VeraluxError};
-
-use super::PresaleVestingScheduel;
+use crate::{validate_multisig, GlobalState, MultisigState, ReentrancyGuard, VeraluxError};
 
 #[derive(Accounts)]
 pub struct InitPresaleCtx<'info> {
@@ -12,27 +10,27 @@ pub struct InitPresaleCtx<'info> {
     #[account(mut, constraint = global.admin == payer.key() @ VeraluxError::InvalidAdmin)]
     pub global: Account<'info, GlobalState>,
 
-    system_program: Program<'info, System>,
+    #[account(mut, constraint = multisig.owners[0] == global.admin @ VeraluxError::UnauthorizedMultisig)]
+    pub multisig: Account<'info, MultisigState>,
 }
 
 impl InitPresaleCtx<'_> {
-    pub fn handler(
-        ctx: Context<InitPresaleCtx>,
-        token_price_in_usdt: u64,
-        max_per_wallet: u64,
-        total_presale_cap: u64,
-        launch_timestamp: i64,
-        vesting: PresaleVestingScheduel,
-    ) -> Result<()> {
+    pub fn handler(ctx: Context<InitPresaleCtx>) -> Result<()> {
+        let guard = ReentrancyGuard::new(&mut ctx.accounts.global)?;
+        drop(guard);
+
+        let multisig = &mut ctx.accounts.multisig;
+        let signer_keys: Vec<Pubkey> = ctx
+            .remaining_accounts
+            .iter()
+            .filter(|acc| acc.is_signer)
+            .map(|acc| acc.key())
+            .collect();
+        validate_multisig(multisig, &signer_keys)?;
+
         let global = &mut ctx.accounts.global;
 
-        global.launch_timestamp = launch_timestamp;
-        global.token_price_in_usdt = token_price_in_usdt;
-        global.max_per_wallet = max_per_wallet;
-        global.total_presale_cap = total_presale_cap;
         global.presale_active = true;
-        global.presale_total_sold = 0;
-        global.presale_vesting = vesting;
         Ok(())
     }
 }

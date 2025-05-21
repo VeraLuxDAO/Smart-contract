@@ -6,7 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-veralux = "xikFFfUa48SD9UZcHjRmkaSKuso7WXQXyxRP4t5EEZY"
+veralux = "FVrTj1gzeyFBMnQsMXTQUYvtXqU8m6cJtdk3VFeSfHf1"
 
 [registry]
 url = "https://api.apr.dev"
