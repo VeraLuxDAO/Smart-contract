@@ -14,7 +14,113 @@ export type Veralux = {
   },
   "instructions": [
     {
+      "name": "confirmMultisig",
+      "discriminator": [
+        165,
+        28,
+        156,
+        38,
+        215,
+        147,
+        111,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pendingMultisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "initGlobal",
+      "docs": [
+        "Global"
+      ],
       "discriminator": [
         44,
         238,
@@ -109,6 +215,127 @@ export type Veralux = {
         }
       ],
       "args": []
+    },
+    {
+      "name": "initMultisig",
+      "docs": [
+        "Multisig"
+      ],
+      "discriminator": [
+        119,
+        130,
+        22,
+        116,
+        114,
+        61,
+        124,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pendingMultisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "owners",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "updateGlobal",
@@ -235,6 +462,19 @@ export type Veralux = {
         159,
         8
       ]
+    },
+    {
+      "name": "pendingMultisigState",
+      "discriminator": [
+        183,
+        153,
+        92,
+        79,
+        10,
+        81,
+        200,
+        157
+      ]
     }
   ],
   "events": [
@@ -249,6 +489,19 @@ export type Veralux = {
         232,
         248,
         248
+      ]
+    },
+    {
+      "name": "multisigPendingEvent",
+      "discriminator": [
+        56,
+        87,
+        61,
+        145,
+        139,
+        70,
+        25,
+        35
       ]
     },
     {
@@ -520,6 +773,22 @@ export type Veralux = {
       }
     },
     {
+      "name": "multisigPendingEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initiationTime",
+            "type": "i64"
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "multisigState",
       "type": {
         "kind": "struct",
@@ -549,6 +818,28 @@ export type Veralux = {
           {
             "name": "ownerCount",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "pendingMultisigState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "newOwners",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "newThreshold",
+            "type": "u8"
+          },
+          {
+            "name": "initiationTime",
+            "type": "i64"
           }
         ]
       }

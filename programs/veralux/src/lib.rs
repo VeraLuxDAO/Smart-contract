@@ -22,11 +22,25 @@ declare_id!("FVrTj1gzeyFBMnQsMXTQUYvtXqU8m6cJtdk3VFeSfHf1");
 pub mod veralux {
     use super::*;
 
+    /// Global
     pub fn init_global(ctx: Context<InitGlobalCtx>) -> Result<()> {
         InitGlobalCtx::handler(ctx)
     }
 
     pub fn update_global(ctx: Context<UpdateGlobalCtx>, ix: GlobalIx) -> Result<()> {
         UpdateGlobalCtx::handler(ctx, ix)
+    }
+
+    /// Multisig
+    pub fn init_multisig(
+        ctx: Context<InitMultisigCtx>,
+        owners: Vec<Pubkey>,
+        threshold: u8,
+    ) -> Result<()> {
+        InitMultisigCtx::handler(ctx, owners, threshold)
+    }
+
+    pub fn confirm_multisig(ctx: Context<ConfirmMultisigCtx>) -> Result<()> {
+        ConfirmMultisigCtx::handler(ctx)
     }
 }

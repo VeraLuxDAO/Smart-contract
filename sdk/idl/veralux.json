@@ -8,7 +8,113 @@
   },
   "instructions": [
     {
+      "name": "confirm_multisig",
+      "discriminator": [
+        165,
+        28,
+        156,
+        38,
+        215,
+        147,
+        111,
+        196
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pending_multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "init_global",
+      "docs": [
+        "Global"
+      ],
       "discriminator": [
         44,
         238,
@@ -103,6 +209,127 @@
         }
       ],
       "args": []
+    },
+    {
+      "name": "init_multisig",
+      "docs": [
+        "Multisig"
+      ],
+      "discriminator": [
+        119,
+        130,
+        22,
+        116,
+        114,
+        61,
+        124,
+        66
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "pending_multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  101,
+                  110,
+                  100,
+                  105,
+                  110,
+                  103,
+                  45,
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "owners",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        }
+      ]
     },
     {
       "name": "update_global",
@@ -229,6 +456,19 @@
         159,
         8
       ]
+    },
+    {
+      "name": "PendingMultisigState",
+      "discriminator": [
+        183,
+        153,
+        92,
+        79,
+        10,
+        81,
+        200,
+        157
+      ]
     }
   ],
   "events": [
@@ -243,6 +483,19 @@
         232,
         248,
         248
+      ]
+    },
+    {
+      "name": "MultisigPendingEvent",
+      "discriminator": [
+        56,
+        87,
+        61,
+        145,
+        139,
+        70,
+        25,
+        35
       ]
     },
     {
@@ -514,6 +767,22 @@
       }
     },
     {
+      "name": "MultisigPendingEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "initiation_time",
+            "type": "i64"
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "MultisigState",
       "type": {
         "kind": "struct",
@@ -543,6 +812,28 @@
           {
             "name": "owner_count",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PendingMultisigState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "new_owners",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "new_threshold",
+            "type": "u8"
+          },
+          {
+            "name": "initiation_time",
+            "type": "i64"
           }
         ]
       }

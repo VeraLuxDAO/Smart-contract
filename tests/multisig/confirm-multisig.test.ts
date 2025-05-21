@@ -3,16 +3,16 @@ import {
   executeTransaction,
   GLOBAL_SEED,
   MockFactory,
-  PENDING_MULTISIG_SEED,
+  MULTISIG_SEED,
 } from "../../sdk/common";
 
 beforeEach(async () => {
   MockFactory.create();
 });
 
-describe.skip("Init Multisig", () => {
-  it("should initialize a multisig account", async () => {
-    const { program, backendWallet, connection, owner1, owner2, owner3 } =
+describe.skip("Confirm Multisig", () => {
+  it("should confirm the multisig account", async () => {
+    const { program, backendWallet, connection, owner1, owner2 } =
       MockFactory.mockFactory;
 
     const [globalPda] = PublicKey.findProgramAddressSync(
@@ -22,15 +22,7 @@ describe.skip("Init Multisig", () => {
 
     const tx = new Transaction();
     const ix = await program.methods
-      .initMultisig(
-        [
-          backendWallet.publicKey,
-          owner1.publicKey,
-          owner2.publicKey,
-          owner3.publicKey,
-        ],
-        3
-      )
+      .confirmMultisig()
       .accounts({
         signer: backendWallet.publicKey,
         global: globalPda,
@@ -57,7 +49,7 @@ describe.skip("Init Multisig", () => {
     tx.add(ix);
 
     const eventListener = program.addEventListener(
-      "multisigPendingEvent",
+      "multisigUpdatedEvent",
       (event) => {
         expect(event.threshold).toBe(3);
       }
@@ -71,14 +63,14 @@ describe.skip("Init Multisig", () => {
 
     program.removeEventListener(eventListener);
 
-    const [pendingMultisigPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from(PENDING_MULTISIG_SEED), backendWallet.publicKey.toBuffer()],
+    const [multisigPda] = PublicKey.findProgramAddressSync(
+      [Buffer.from(MULTISIG_SEED), backendWallet.publicKey.toBuffer()],
       program.programId
     );
 
-    const pendingMultisig = await program.account.pendingMultisigState.fetch(
-      pendingMultisigPda
-    );
-    expect(pendingMultisig.newThreshold).toBe(3);
+    const multisig = await program.account.multisigState.fetch(multisigPda);
+
+    expect(multisig.owners.length).toEqual(4);
+    expect(multisig.threshold).toEqual(3);
   });
 });

@@ -14,8 +14,14 @@ pub struct MultisigUpdatedEvent {
 }
 
 #[event]
+pub struct MultisigPendingEvent {
+    pub initiation_time: i64,
+    pub threshold: u8,
+}
+
+#[event]
 pub struct GlobalUpdateEvent {
     pub launch_timestamp: i64,
     pub threshold: u8,
-    pub initial_owners: Vec<Pubkey>,        
+    pub initial_owners: Vec<Pubkey>,
 }

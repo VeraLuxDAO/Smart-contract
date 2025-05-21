@@ -28,6 +28,7 @@ export const GLOBAL_SEED = "global-authority";
 export const PRESALE_SEED = "presale-authority";
 export const TREASURY_SEED = "treasury-authority";
 export const MULTISIG_SEED = "multisig-authority";
+export const PENDING_MULTISIG_SEED = "pending-multisig-authority";
 
 export type SolanaProvider = {
   connection: Connection;

@@ -14,7 +14,7 @@ pub struct ConfirmMultisigCtx<'info> {
 
     #[account(
         mut,
-        constraint = global.admin == signer.key() @ VeraluxError::InvalidAdmin,
+        constraint = global.admin == multisig.key() @ VeraluxError::InvalidAdmin,
         constraint = !global.paused @ VeraluxError::Paused
     )]
     pub global: Account<'info, GlobalState>,
@@ -38,20 +38,18 @@ pub struct ConfirmMultisigCtx<'info> {
 
 impl ConfirmMultisigCtx<'_> {
     pub fn handler(ctx: Context<ConfirmMultisigCtx>) -> Result<()> {
-        let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
+        let _guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
         let pending_multisig = &ctx.accounts.pending_multisig;
         let now = Clock::get()?.unix_timestamp;
         require!(
-            now >= pending_multisig.initiation_time + 24 * 3600,
+            now >= pending_multisig.initiation_time + 24 * 10,
             VeraluxError::TimeLockNotMet
         );
 
         let multisig = &mut ctx.accounts.multisig;
         multisig.owners = pending_multisig.new_owners.clone();
         multisig.threshold = pending_multisig.new_threshold;
-
-        drop(guard);
 
         emit!(MultisigUpdatedEvent {
             threshold: multisig.threshold,
