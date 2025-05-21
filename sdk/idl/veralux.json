@@ -332,6 +332,122 @@
       ]
     },
     {
+      "name": "submit_proposal",
+      "docs": [
+        "Governance"
+      ],
+      "discriminator": [
+        224,
+        38,
+        210,
+        52,
+        167,
+        150,
+        221,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "global.proposal_count",
+                "account": "GlobalState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "ix",
+          "type": {
+            "defined": {
+              "name": "ProposalIx"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "update_global",
       "discriminator": [
         90,
@@ -469,20 +585,46 @@
         200,
         157
       ]
+    },
+    {
+      "name": "ProposalState",
+      "discriminator": [
+        251,
+        209,
+        129,
+        206,
+        222,
+        199,
+        248,
+        29
+      ]
     }
   ],
   "events": [
     {
-      "name": "GlobalUpdateEvent",
+      "name": "GlobalUpdatedEvent",
       "discriminator": [
-        153,
-        69,
-        19,
-        7,
+        238,
         115,
-        232,
-        248,
-        248
+        218,
+        227,
+        170,
+        114,
+        63,
+        209
+      ]
+    },
+    {
+      "name": "MultisigConfirmedEvent",
+      "discriminator": [
+        18,
+        227,
+        108,
+        78,
+        71,
+        196,
+        227,
+        224
       ]
     },
     {
@@ -499,29 +641,16 @@
       ]
     },
     {
-      "name": "MultisigUpdatedEvent",
+      "name": "ProposalSubmittedEvent",
       "discriminator": [
-        56,
-        243,
-        88,
-        79,
-        230,
-        188,
-        137,
-        20
-      ]
-    },
-    {
-      "name": "ProposalSubmitted",
-      "discriminator": [
-        36,
-        127,
-        215,
-        177,
-        143,
-        187,
-        90,
-        147
+        210,
+        156,
+        179,
+        54,
+        84,
+        52,
+        115,
+        4
       ]
     }
   ],
@@ -723,7 +852,7 @@
           },
           {
             "name": "proposal_count",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "tax_rate",
@@ -745,7 +874,7 @@
       }
     },
     {
-      "name": "GlobalUpdateEvent",
+      "name": "GlobalUpdatedEvent",
       "type": {
         "kind": "struct",
         "fields": [
@@ -762,6 +891,22 @@
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MultisigConfirmedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "owner_count",
+            "type": "u8"
           }
         ]
       }
@@ -801,22 +946,6 @@
       }
     },
     {
-      "name": "MultisigUpdatedEvent",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "threshold",
-            "type": "u8"
-          },
-          {
-            "name": "owner_count",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "PendingMultisigState",
       "type": {
         "kind": "struct",
@@ -839,13 +968,85 @@
       }
     },
     {
-      "name": "ProposalSubmitted",
+      "name": "ProposalIx",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposal_values",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "description",
+            "type": "bytes"
+          },
+          {
+            "name": "proposal_type",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u32"
+          },
+          {
+            "name": "start_time",
+            "type": "i64"
+          },
+          {
+            "name": "end_time",
+            "type": "i64"
+          },
+          {
+            "name": "execution_time",
+            "type": "i64"
+          },
+          {
+            "name": "votes_for",
+            "type": "u64"
+          },
+          {
+            "name": "votes_against",
+            "type": "u64"
+          },
+          {
+            "name": "proposal_values",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "description",
+            "type": "bytes"
+          },
+          {
+            "name": "proposal_type",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ProposalSubmittedEvent",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "proposal_id",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "proposal_type",

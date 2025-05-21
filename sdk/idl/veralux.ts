@@ -338,6 +338,122 @@ export type Veralux = {
       ]
     },
     {
+      "name": "submitProposal",
+      "docs": [
+        "Governance"
+      ],
+      "discriminator": [
+        224,
+        38,
+        210,
+        52,
+        167,
+        150,
+        221,
+        150
+      ],
+      "accounts": [
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "proposal",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  111,
+                  112,
+                  111,
+                  115,
+                  97,
+                  108,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "signer"
+              },
+              {
+                "kind": "account",
+                "path": "global.proposal_count",
+                "account": "globalState"
+              }
+            ]
+          }
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "ix",
+          "type": {
+            "defined": {
+              "name": "proposalIx"
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "updateGlobal",
       "discriminator": [
         90,
@@ -475,20 +591,46 @@ export type Veralux = {
         200,
         157
       ]
+    },
+    {
+      "name": "proposalState",
+      "discriminator": [
+        251,
+        209,
+        129,
+        206,
+        222,
+        199,
+        248,
+        29
+      ]
     }
   ],
   "events": [
     {
-      "name": "globalUpdateEvent",
+      "name": "globalUpdatedEvent",
       "discriminator": [
-        153,
-        69,
-        19,
-        7,
+        238,
         115,
-        232,
-        248,
-        248
+        218,
+        227,
+        170,
+        114,
+        63,
+        209
+      ]
+    },
+    {
+      "name": "multisigConfirmedEvent",
+      "discriminator": [
+        18,
+        227,
+        108,
+        78,
+        71,
+        196,
+        227,
+        224
       ]
     },
     {
@@ -505,29 +647,16 @@ export type Veralux = {
       ]
     },
     {
-      "name": "multisigUpdatedEvent",
+      "name": "proposalSubmittedEvent",
       "discriminator": [
-        56,
-        243,
-        88,
-        79,
-        230,
-        188,
-        137,
-        20
-      ]
-    },
-    {
-      "name": "proposalSubmitted",
-      "discriminator": [
-        36,
-        127,
-        215,
-        177,
-        143,
-        187,
-        90,
-        147
+        210,
+        156,
+        179,
+        54,
+        84,
+        52,
+        115,
+        4
       ]
     }
   ],
@@ -729,7 +858,7 @@ export type Veralux = {
           },
           {
             "name": "proposalCount",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "taxRate",
@@ -751,7 +880,7 @@ export type Veralux = {
       }
     },
     {
-      "name": "globalUpdateEvent",
+      "name": "globalUpdatedEvent",
       "type": {
         "kind": "struct",
         "fields": [
@@ -768,6 +897,22 @@ export type Veralux = {
             "type": {
               "vec": "pubkey"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "multisigConfirmedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "ownerCount",
+            "type": "u8"
           }
         ]
       }
@@ -807,22 +952,6 @@ export type Veralux = {
       }
     },
     {
-      "name": "multisigUpdatedEvent",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "threshold",
-            "type": "u8"
-          },
-          {
-            "name": "ownerCount",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "pendingMultisigState",
       "type": {
         "kind": "struct",
@@ -845,13 +974,85 @@ export type Veralux = {
       }
     },
     {
-      "name": "proposalSubmitted",
+      "name": "proposalIx",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "proposalValues",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "description",
+            "type": "bytes"
+          },
+          {
+            "name": "proposalType",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "proposalState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u32"
+          },
+          {
+            "name": "startTime",
+            "type": "i64"
+          },
+          {
+            "name": "endTime",
+            "type": "i64"
+          },
+          {
+            "name": "executionTime",
+            "type": "i64"
+          },
+          {
+            "name": "votesFor",
+            "type": "u64"
+          },
+          {
+            "name": "votesAgainst",
+            "type": "u64"
+          },
+          {
+            "name": "proposalValues",
+            "type": {
+              "vec": "u64"
+            }
+          },
+          {
+            "name": "description",
+            "type": "bytes"
+          },
+          {
+            "name": "proposalType",
+            "type": "u8"
+          },
+          {
+            "name": "status",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "proposalSubmittedEvent",
       "type": {
         "kind": "struct",
         "fields": [
           {
             "name": "proposalId",
-            "type": "u64"
+            "type": "u32"
           },
           {
             "name": "proposalType",

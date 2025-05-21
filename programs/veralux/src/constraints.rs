@@ -24,3 +24,8 @@ pub const PROPOSAL_MAX_DESCRIPTION_LENGTH: usize = 200;
 
 // Global
 pub const INITIAL_TAX_RATE: u64 = 500;
+
+// Limit
+pub const PENDING_MULTISIG_PERIOD: u32 = 24 * 3600; // 24h
+pub const PROPOSAL_END_PERIOD: u32 = 14 * 86400; // 14 day
+pub const PROPOSAL_EXECUTION_PERIOD: u32 = 3 * 86400; // 3 day

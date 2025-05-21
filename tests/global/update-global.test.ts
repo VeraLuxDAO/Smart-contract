@@ -44,7 +44,7 @@ describe.skip("Global Update Tests", () => {
     tx.add(ix);
 
     const eventListener = program.addEventListener(
-      "globalUpdateEvent",
+      "globalUpdatedEvent",
       (event) => {
         expect(event.launchTimestamp.toString()).toBe(
           launchTimestamp.toString()
@@ -59,8 +59,8 @@ describe.skip("Global Update Tests", () => {
     );
 
     await executeTransaction(connection, tx, backendWallet);
-    
-    await new Promise(resolve => setTimeout(resolve, 500));
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
     program.removeEventListener(eventListener);
 

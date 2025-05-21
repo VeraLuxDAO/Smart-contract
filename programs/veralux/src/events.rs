@@ -1,14 +1,14 @@
 use anchor_lang::prelude::*;
 
 #[event]
-pub struct ProposalSubmitted {
-    pub proposal_id: u64,
+pub struct ProposalSubmittedEvent {
+    pub proposal_id: u32,
     pub proposal_type: u8,
     pub description: String,
 }
 
 #[event]
-pub struct MultisigUpdatedEvent {
+pub struct MultisigConfirmedEvent {
     pub threshold: u8,
     pub owner_count: u8,
 }
@@ -20,7 +20,7 @@ pub struct MultisigPendingEvent {
 }
 
 #[event]
-pub struct GlobalUpdateEvent {
+pub struct GlobalUpdatedEvent {
     pub launch_timestamp: i64,
     pub threshold: u8,
     pub initial_owners: Vec<Pubkey>,

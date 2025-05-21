@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    validate_multisig, GlobalUpdateEvent, MultisigState, ReentrancyGuard, VeraluxError,
+    validate_multisig, GlobalUpdatedEvent, MultisigState, ReentrancyGuard, VeraluxError,
     GLOBAL_SEED, MULTISIG_SEED,
 };
 
@@ -58,7 +58,7 @@ impl UpdateGlobalCtx<'_> {
         multisig.owners = ix.initial_owners;
         multisig.threshold = ix.threshold;
 
-        emit!(GlobalUpdateEvent {
+        emit!(GlobalUpdatedEvent {
             launch_timestamp: global.launch_timestamp,
             threshold: multisig.threshold,
             initial_owners: multisig.owners.clone(),

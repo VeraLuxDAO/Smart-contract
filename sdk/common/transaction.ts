@@ -4,9 +4,11 @@ import {
   ConfirmOptions,
   Connection,
   PublicKey,
+  RpcResponseAndContext,
   sendAndConfirmRawTransaction,
   SendTransactionError,
   Signer,
+  SimulatedTransactionResponse,
   Transaction,
   TransactionMessage,
   VersionedTransaction,
@@ -62,6 +64,37 @@ export async function executeTransaction(
       logError(e);
     }
     throw e;
+  }
+}
+
+export async function simulateTransaction(
+  connection: Connection,
+  tx: Transaction,
+  wallet: Wallet
+): Promise<string> {
+  if (!wallet.publicKey) {
+    throw new Error("Wallet does not have a valid public key");
+  }
+
+  tx.feePayer = wallet.publicKey;
+
+  try {
+    const simulateResponse: RpcResponseAndContext<SimulatedTransactionResponse> =
+      await connection.simulateTransaction(tx);
+
+    const simulatedTransaction = simulateResponse.value;
+
+    if (simulatedTransaction.err) {
+      throw new Error(`Simulation error: ${simulatedTransaction.err}`);
+    }
+
+    return (
+      simulatedTransaction.logs?.join("\n") ||
+      "Transaction simulated successfully without errors"
+    );
+  } catch (error) {
+    console.error("Error simulating transaction:", error);
+    throw error;
   }
 }
 

@@ -43,4 +43,9 @@ pub mod veralux {
     pub fn confirm_multisig(ctx: Context<ConfirmMultisigCtx>) -> Result<()> {
         ConfirmMultisigCtx::handler(ctx)
     }
+
+    /// Governance
+    pub fn submit_proposal(ctx: Context<SubmitProposalCtx>, ix: ProposalIx) -> Result<()> {
+        SubmitProposalCtx::handler(ctx, ix)
+    }
 }

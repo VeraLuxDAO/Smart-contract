@@ -49,7 +49,7 @@ describe.skip("Confirm Multisig", () => {
     tx.add(ix);
 
     const eventListener = program.addEventListener(
-      "multisigUpdatedEvent",
+      "multisigConfirmedEvent",
       (event) => {
         expect(event.threshold).toBe(3);
       }

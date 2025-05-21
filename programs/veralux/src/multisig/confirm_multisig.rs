@@ -1,8 +1,8 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    GlobalState, MultisigUpdatedEvent, ReentrancyGuard, VeraluxError, MULTISIG_SEED,
-    PENDING_MULTISIG_SEED,
+    GlobalState, MultisigConfirmedEvent, ReentrancyGuard, VeraluxError, MULTISIG_SEED,
+    PENDING_MULTISIG_PERIOD, PENDING_MULTISIG_SEED,
 };
 
 use super::{MultisigState, PendingMultisigState};
@@ -43,7 +43,7 @@ impl ConfirmMultisigCtx<'_> {
         let pending_multisig = &ctx.accounts.pending_multisig;
         let now = Clock::get()?.unix_timestamp;
         require!(
-            now >= pending_multisig.initiation_time + 24 * 10,
+            now >= pending_multisig.initiation_time + PENDING_MULTISIG_PERIOD as i64,
             VeraluxError::TimeLockNotMet
         );
 
@@ -51,7 +51,7 @@ impl ConfirmMultisigCtx<'_> {
         multisig.owners = pending_multisig.new_owners.clone();
         multisig.threshold = pending_multisig.new_threshold;
 
-        emit!(MultisigUpdatedEvent {
+        emit!(MultisigConfirmedEvent {
             threshold: multisig.threshold,
             owner_count: multisig.owners.len() as u8
         });

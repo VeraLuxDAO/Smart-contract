@@ -11,7 +11,7 @@ pub struct GlobalState {
     pub presale_active: bool,
 
     // Proposal
-    pub proposal_count: u64,
+    pub proposal_count: u32,
 
     // Governance
     pub tax_rate: u64,

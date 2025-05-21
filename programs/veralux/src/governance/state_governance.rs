@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 #[account]
 #[derive(InitSpace)]
 pub struct ProposalState {
-    pub id: u64,
+    pub id: u32,
     pub start_time: i64,
     pub end_time: i64,
     pub execution_time: i64,
