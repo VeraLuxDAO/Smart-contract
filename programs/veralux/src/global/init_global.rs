@@ -48,7 +48,7 @@ impl InitGlobalCtx<'_> {
         global.presale_active = false;
         global.tax_rate = INITIAL_TAX_RATE;
         global.is_processing = false;
-        global.total_boting_power = 0;
+        global.total_voting_power = 0;
 
         Ok(())
     }

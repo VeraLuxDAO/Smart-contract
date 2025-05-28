@@ -62,6 +62,10 @@ pub enum VeraluxError {
     #[msg("Presale maximum per wallet exceeded")]
     PresaleMaxPerWalletExceeded,
 
+    /// Staking
+    #[msg("Invalid tier")]
+    InvalidTier,
+
     #[msg("Invalid authority")]
     InvalidAuthority,
     #[msg("Presale already initialized")]

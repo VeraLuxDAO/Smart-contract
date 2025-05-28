@@ -21,7 +21,7 @@ pub struct GlobalState {
     // Proposal
     pub proposal_count: u32,
 
-    pub total_boting_power: u64,
+    pub total_voting_power: u64,
 
     // DAO
     pub tax_rate: u64,

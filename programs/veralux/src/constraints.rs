@@ -18,8 +18,13 @@ pub const PRIVATE_PRESALE_SUPPLY: u64 = 150_000_000 * 10u64.pow(TOKEN_DECIMALS a
 pub const WHITELIST_MAX_PER_WALLET: u64 = 1_000_000 * 10u64.pow(TOKEN_DECIMALS as u32); // 1M tokens
 
 // Staking
-pub const STAKING_TIERS: [u64; 4] = [20_000, 100_000, 500_000, 5_000_000];
-pub const STAKING_LOCKS: [i64; 4] = [7, 14, 30, 30];
+pub const STAKING_TIERS: [u64; 4] = [
+    20_000 * 10u64.pow(TOKEN_DECIMALS as u32),
+    100_000 * 10u64.pow(TOKEN_DECIMALS as u32),
+    500_000 * 10u64.pow(TOKEN_DECIMALS as u32),
+    5_000_000 * 10u64.pow(TOKEN_DECIMALS as u32),
+];
+pub const STAKING_DURATIONS: [i64; 4] = [7 * 86400, 14 * 86400, 30 * 86400, 30 * 86400];
 pub const STAKING_REWARDS: [u64; 4] = [500, 2_500, 12_500, 125_000];
 pub const MULTIPLIER_60D: u64 = 1500;
 pub const MULTIPLIER_90D: u64 = 1995;

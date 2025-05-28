@@ -43,3 +43,16 @@ pub struct MultisigPendingEvent {
     pub initiation_time: i64,
     pub threshold: u8,
 }
+
+#[event]
+pub struct VotingPowerUpdatedEvent {
+    pub old_power: u64,
+    pub new_power: u64,
+}
+
+#[event]
+pub struct StakeEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+    pub tier: u8,
+}

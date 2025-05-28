@@ -7,6 +7,7 @@ pub mod global;
 pub mod governance;
 pub mod multisig;
 pub mod presale;
+pub mod staking;
 pub mod utils;
 
 pub use constraints::*;
@@ -16,6 +17,7 @@ pub use global::*;
 pub use governance::*;
 pub use multisig::*;
 pub use presale::*;
+pub use staking::*;
 pub use utils::*;
 
 declare_id!("B7ey9pqVRrtFWDWLWuDr9VxD1VWdn1YviVg74vw4cPwq");
