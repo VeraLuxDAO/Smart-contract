@@ -9,7 +9,6 @@ use crate::{
 use super::{ProposalIx, ProposalState};
 
 #[derive(Accounts)]
-#[instruction()]
 pub struct SubmitProposalCtx<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,

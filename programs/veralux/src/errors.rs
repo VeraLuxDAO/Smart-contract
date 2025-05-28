@@ -7,12 +7,30 @@ pub enum VeraluxError {
     Paused,
     #[msg("Invalid global admin")]
     InvalidAdmin,
+    #[msg("The whitelist list is full")]
+    WhitelistFull,
+    #[msg("This memeber already in whitelist")]
+    AlreadyWhitelisted,
+    #[msg("Couldn't update global")]
+    AlreadyUpdatedGlobal,
+
+    /// Presale errors
+    #[msg("Presale is not active")]
+    PresaleNotActive,
+    #[msg("Presale purchase amount must be greater than zero.")]
+    InvalidPurchaseAmount,
 
     /// Governance errors
     #[msg("Description too long")]
     DescriptionTooLong,
     #[msg("Too many proposal values")]
     TooManyProposalValues,
+    #[msg("Proposal has already been executed")]
+    ProposalAlreadyExecuted,
+    #[msg("Voting period has not ended")]
+    VotingPeriodNotEnded,
+    #[msg("Notice period for proposal execution not met")]
+    NoticePeriodNotMet,
 
     /// Utility errors
     #[msg("Reentrancy guard triggered: Operation already in progress")]
@@ -25,6 +43,10 @@ pub enum VeraluxError {
     InsufficientSigners,
     #[msg("Unauthorized: Signer is not a multisig owner")]
     SignerNotOwner,
+    #[msg("Unauthorized: Buyer is not a account owner")]
+    BuyerNotOwner,
+    #[msg("Unauthorized: USDT account owner is not a admin")]
+    NotAdminUSDTOwner,
 
     /// Limit
     #[msg("Time lock requirement not met")]
@@ -33,19 +55,21 @@ pub enum VeraluxError {
     InvalidThreshold,
     #[msg("Too few owners in multisig")]
     TooFewOwners,
+    #[msg("Not enough usdt amount in buyer")]
+    NotEnoughUSDTBuyer,
+    #[msg("Presale supply exceeded")]
+    PresaleSupplyExceeded,
+    #[msg("Presale maximum per wallet exceeded")]
+    PresaleMaxPerWalletExceeded,
 
     #[msg("Invalid authority")]
     InvalidAuthority,
     #[msg("Presale already initialized")]
     PresaleAlreadyInitialized,
-    #[msg("Presale not active")]
-    PresaleNotActive,
     #[msg("Invalid treasury")]
     InvalidTreasury,
     #[msg("Arithmetic overflow")]
     ArithmeticOverflow,
-    #[msg("Presale supply exceeded")]
-    PresaleSupplyExceeded,
     #[msg("KYC required")]
     KYCRequired,
     #[msg("Invalid user")]
@@ -64,7 +88,7 @@ pub enum VeraluxError {
     InvalidTreasuryTokenAccount,
     #[msg("Invalid owners count")]
     InvalidOwnersCount,
-    
+
     #[msg("Invalid multisig admin")]
     InvalidMultisigAdmin,
 

@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/veralux.json`.
  */
 export type Veralux = {
-  "address": "FVrTj1gzeyFBMnQsMXTQUYvtXqU8m6cJtdk3VFeSfHf1",
+  "address": "B7ey9pqVRrtFWDWLWuDr9VxD1VWdn1YviVg74vw4cPwq",
   "metadata": {
     "name": "veralux",
     "version": "0.1.0",
@@ -13,6 +13,209 @@ export type Veralux = {
     "description": "Created with Anchor"
   },
   "instructions": [
+    {
+      "name": "addWhitelist",
+      "discriminator": [
+        215,
+        46,
+        143,
+        176,
+        108,
+        113,
+        24,
+        1
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "whitelist",
+          "type": "pubkey"
+        }
+      ]
+    },
+    {
+      "name": "buyPresale",
+      "docs": [
+        "Preslae"
+      ],
+      "discriminator": [
+        113,
+        18,
+        193,
+        68,
+        35,
+        36,
+        215,
+        8
+      ],
+      "accounts": [
+        {
+          "name": "buyer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "presalePurchase",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101,
+                  45,
+                  112,
+                  117,
+                  114,
+                  99,
+                  104,
+                  97,
+                  115,
+                  101,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "presaleVesting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101,
+                  45,
+                  118,
+                  101,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "buyer"
+              }
+            ]
+          }
+        },
+        {
+          "name": "buyerUsdcAccount",
+          "writable": true
+        },
+        {
+          "name": "adminUsdcAccount",
+          "writable": true
+        },
+        {
+          "name": "tokenProgram",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "systemProgram",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "usdcAmount",
+          "type": "u64"
+        },
+        {
+          "name": "kycVerified",
+          "type": "bool"
+        }
+      ]
+    },
     {
       "name": "confirmMultisig",
       "discriminator": [
@@ -117,6 +320,30 @@ export type Veralux = {
       "args": []
     },
     {
+      "name": "executeProposal",
+      "discriminator": [
+        186,
+        60,
+        116,
+        133,
+        108,
+        128,
+        111,
+        28
+      ],
+      "accounts": [
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "proposal",
+          "writable": true
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "initGlobal",
       "docs": [
         "Global"
@@ -204,10 +431,6 @@ export type Veralux = {
               }
             ]
           }
-        },
-        {
-          "name": "veraluxTokenMint",
-          "writable": true
         },
         {
           "name": "systemProgram",
@@ -336,6 +559,66 @@ export type Veralux = {
           "type": "u8"
         }
       ]
+    },
+    {
+      "name": "startPresale",
+      "discriminator": [
+        57,
+        19,
+        73,
+        191,
+        195,
+        254,
+        45,
+        223
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
     },
     {
       "name": "submitProposal",
@@ -473,36 +756,7 @@ export type Veralux = {
         },
         {
           "name": "global",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  103,
-                  108,
-                  111,
-                  98,
-                  97,
-                  108,
-                  45,
-                  97,
-                  117,
-                  116,
-                  104,
-                  111,
-                  114,
-                  105,
-                  116,
-                  121
-                ]
-              },
-              {
-                "kind": "account",
-                "path": "payer"
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "multisig",
@@ -593,6 +847,32 @@ export type Veralux = {
       ]
     },
     {
+      "name": "presalePurchase",
+      "discriminator": [
+        34,
+        110,
+        127,
+        240,
+        83,
+        219,
+        152,
+        227
+      ]
+    },
+    {
+      "name": "presaleVesting",
+      "discriminator": [
+        97,
+        146,
+        20,
+        99,
+        2,
+        184,
+        221,
+        191
+      ]
+    },
+    {
       "name": "proposalState",
       "discriminator": [
         251,
@@ -647,6 +927,19 @@ export type Veralux = {
       ]
     },
     {
+      "name": "presalePurchaseEvent",
+      "discriminator": [
+        30,
+        12,
+        195,
+        203,
+        44,
+        187,
+        164,
+        135
+      ]
+    },
+    {
       "name": "proposalSubmittedEvent",
       "discriminator": [
         210,
@@ -657,6 +950,32 @@ export type Veralux = {
         52,
         115,
         4
+      ]
+    },
+    {
+      "name": "startedPresaleEvent",
+      "discriminator": [
+        173,
+        101,
+        34,
+        163,
+        102,
+        102,
+        69,
+        72
+      ]
+    },
+    {
+      "name": "whitelistAddedEvent",
+      "discriminator": [
+        123,
+        13,
+        187,
+        218,
+        198,
+        10,
+        192,
+        230
       ]
     }
   ],
@@ -673,141 +992,196 @@ export type Veralux = {
     },
     {
       "code": 6002,
+      "name": "whitelistFull",
+      "msg": "The whitelist list is full"
+    },
+    {
+      "code": 6003,
+      "name": "alreadyWhitelisted",
+      "msg": "This memeber already in whitelist"
+    },
+    {
+      "code": 6004,
+      "name": "alreadyUpdatedGlobal",
+      "msg": "Couldn't update global"
+    },
+    {
+      "code": 6005,
+      "name": "presaleNotActive",
+      "msg": "Presale is not active"
+    },
+    {
+      "code": 6006,
+      "name": "invalidPurchaseAmount",
+      "msg": "Presale purchase amount must be greater than zero."
+    },
+    {
+      "code": 6007,
       "name": "descriptionTooLong",
       "msg": "Description too long"
     },
     {
-      "code": 6003,
+      "code": 6008,
       "name": "tooManyProposalValues",
       "msg": "Too many proposal values"
     },
     {
-      "code": 6004,
+      "code": 6009,
+      "name": "proposalAlreadyExecuted",
+      "msg": "Proposal has already been executed"
+    },
+    {
+      "code": 6010,
+      "name": "votingPeriodNotEnded",
+      "msg": "Voting period has not ended"
+    },
+    {
+      "code": 6011,
+      "name": "noticePeriodNotMet",
+      "msg": "Notice period for proposal execution not met"
+    },
+    {
+      "code": 6012,
       "name": "reentrancyGuardTriggered",
       "msg": "Reentrancy guard triggered: Operation already in progress"
     },
     {
-      "code": 6005,
+      "code": 6013,
       "name": "unauthorizedMultisig",
       "msg": "Unauthorized: Multisig admin is not the first owner"
     },
     {
-      "code": 6006,
+      "code": 6014,
       "name": "insufficientSigners",
       "msg": "Unauthorized: Insufficient signers for multisig operation"
     },
     {
-      "code": 6007,
+      "code": 6015,
       "name": "signerNotOwner",
       "msg": "Unauthorized: Signer is not a multisig owner"
     },
     {
-      "code": 6008,
+      "code": 6016,
+      "name": "buyerNotOwner",
+      "msg": "Unauthorized: Buyer is not a account owner"
+    },
+    {
+      "code": 6017,
+      "name": "notAdminUsdtOwner",
+      "msg": "Unauthorized: USDT account owner is not a admin"
+    },
+    {
+      "code": 6018,
       "name": "timeLockNotMet",
       "msg": "Time lock requirement not met"
     },
     {
-      "code": 6009,
+      "code": 6019,
       "name": "invalidThreshold",
       "msg": "Invalid threshold"
     },
     {
-      "code": 6010,
+      "code": 6020,
       "name": "tooFewOwners",
       "msg": "Too few owners in multisig"
     },
     {
-      "code": 6011,
-      "name": "invalidAuthority",
-      "msg": "Invalid authority"
+      "code": 6021,
+      "name": "notEnoughUsdtBuyer",
+      "msg": "Not enough usdt amount in buyer"
     },
     {
-      "code": 6012,
-      "name": "presaleAlreadyInitialized",
-      "msg": "Presale already initialized"
-    },
-    {
-      "code": 6013,
-      "name": "presaleNotActive",
-      "msg": "Presale not active"
-    },
-    {
-      "code": 6014,
-      "name": "invalidTreasury",
-      "msg": "Invalid treasury"
-    },
-    {
-      "code": 6015,
-      "name": "arithmeticOverflow",
-      "msg": "Arithmetic overflow"
-    },
-    {
-      "code": 6016,
+      "code": 6022,
       "name": "presaleSupplyExceeded",
       "msg": "Presale supply exceeded"
     },
     {
-      "code": 6017,
+      "code": 6023,
+      "name": "presaleMaxPerWalletExceeded",
+      "msg": "Presale maximum per wallet exceeded"
+    },
+    {
+      "code": 6024,
+      "name": "invalidAuthority",
+      "msg": "Invalid authority"
+    },
+    {
+      "code": 6025,
+      "name": "presaleAlreadyInitialized",
+      "msg": "Presale already initialized"
+    },
+    {
+      "code": 6026,
+      "name": "invalidTreasury",
+      "msg": "Invalid treasury"
+    },
+    {
+      "code": 6027,
+      "name": "arithmeticOverflow",
+      "msg": "Arithmetic overflow"
+    },
+    {
+      "code": 6028,
       "name": "kycRequired",
       "msg": "KYC required"
     },
     {
-      "code": 6018,
+      "code": 6029,
       "name": "invalidUser",
       "msg": "Invalid user"
     },
     {
-      "code": 6019,
+      "code": 6030,
       "name": "presaleNotStarted",
       "msg": "Presale not started"
     },
     {
-      "code": 6020,
+      "code": 6031,
       "name": "presaleAlreadyClaimed",
       "msg": "Presale already claimed"
     },
     {
-      "code": 6021,
+      "code": 6032,
       "name": "nothingToClaim",
       "msg": "Nothing to claim"
     },
     {
-      "code": 6022,
+      "code": 6033,
       "name": "invalidUserTokenAccount",
       "msg": "Invalid user token account"
     },
     {
-      "code": 6023,
+      "code": 6034,
       "name": "presaleEnded",
       "msg": "Presale ended"
     },
     {
-      "code": 6024,
+      "code": 6035,
       "name": "invalidTreasuryTokenAccount",
       "msg": "Invalid treasury token account"
     },
     {
-      "code": 6025,
+      "code": 6036,
       "name": "invalidOwnersCount",
       "msg": "Invalid owners count"
     },
     {
-      "code": 6026,
+      "code": 6037,
       "name": "invalidMultisigAdmin",
       "msg": "Invalid multisig admin"
     },
     {
-      "code": 6027,
+      "code": 6038,
       "name": "stakingAmountZero",
       "msg": "Staking amount is zero"
     },
     {
-      "code": 6028,
+      "code": 6039,
       "name": "invalidStakingTier",
       "msg": "Invalid staking tier"
     },
     {
-      "code": 6029,
+      "code": 6040,
       "name": "unauthorized",
       "msg": "unauthorized"
     }
@@ -818,6 +1192,22 @@ export type Veralux = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "teamWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasuryWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "lpWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "charityWallet",
+            "type": "pubkey"
+          },
           {
             "name": "launchTimestamp",
             "type": "i64"
@@ -845,11 +1235,35 @@ export type Veralux = {
             "type": "pubkey"
           },
           {
+            "name": "adminWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "teamWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "treasuryWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "lpWallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "charityWallet",
+            "type": "pubkey"
+          },
+          {
             "name": "launchTimestamp",
             "type": "i64"
           },
           {
-            "name": "totalPresaleSold",
+            "name": "totalPublicPresaleSold",
+            "type": "u64"
+          },
+          {
+            "name": "totalPrivatePresaleSold",
             "type": "u64"
           },
           {
@@ -861,8 +1275,18 @@ export type Veralux = {
             "type": "u32"
           },
           {
+            "name": "totalBotingPower",
+            "type": "u64"
+          },
+          {
             "name": "taxRate",
             "type": "u64"
+          },
+          {
+            "name": "whitelist",
+            "type": {
+              "vec": "pubkey"
+            }
           },
           {
             "name": "pauseReason",
@@ -974,6 +1398,62 @@ export type Veralux = {
       }
     },
     {
+      "name": "presalePurchase",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "totalPurchased",
+            "type": "u64"
+          },
+          {
+            "name": "totalPrivatePurchased",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "presalePurchaseEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "buyer",
+            "type": "pubkey"
+          },
+          {
+            "name": "usdcAmount",
+            "type": "u64"
+          },
+          {
+            "name": "tokenAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "presaleVesting",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "totalAmount",
+            "type": "u64"
+          },
+          {
+            "name": "claimedAmount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
       "name": "proposalIx",
       "type": {
         "kind": "struct",
@@ -1061,6 +1541,34 @@ export type Veralux = {
           {
             "name": "description",
             "type": "string"
+          }
+        ]
+      }
+    },
+    {
+      "name": "startedPresaleEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "startedPresale",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "whitelistAddedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "address",
+            "type": "pubkey"
+          },
+          {
+            "name": "totalWhitelisted",
+            "type": "u8"
           }
         ]
       }

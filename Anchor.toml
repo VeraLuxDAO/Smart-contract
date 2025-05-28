@@ -6,11 +6,11 @@ resolution = true
 skip-lint = false
 
 [programs.devnet]
-veralux = "FVrTj1gzeyFBMnQsMXTQUYvtXqU8m6cJtdk3VFeSfHf1"
+veralux = "B7ey9pqVRrtFWDWLWuDr9VxD1VWdn1YviVg74vw4cPwq"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
 cluster = "devnet"
-wallet = "./key.json"
+wallet = "./keypairs/main.json"

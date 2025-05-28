@@ -6,6 +6,7 @@ pub mod events;
 pub mod global;
 pub mod governance;
 pub mod multisig;
+pub mod presale;
 pub mod utils;
 
 pub use constraints::*;
@@ -14,9 +15,10 @@ pub use events::*;
 pub use global::*;
 pub use governance::*;
 pub use multisig::*;
+pub use presale::*;
 pub use utils::*;
 
-declare_id!("FVrTj1gzeyFBMnQsMXTQUYvtXqU8m6cJtdk3VFeSfHf1");
+declare_id!("B7ey9pqVRrtFWDWLWuDr9VxD1VWdn1YviVg74vw4cPwq");
 
 #[program]
 pub mod veralux {
@@ -29,6 +31,23 @@ pub mod veralux {
 
     pub fn update_global(ctx: Context<UpdateGlobalCtx>, ix: GlobalIx) -> Result<()> {
         UpdateGlobalCtx::handler(ctx, ix)
+    }
+
+    pub fn start_presale(ctx: Context<UpdateGlobalCtx>) -> Result<()> {
+        UpdateGlobalCtx::start_presale(ctx)
+    }
+
+    pub fn add_whitelist(ctx: Context<UpdateGlobalCtx>, whitelist: Pubkey) -> Result<()> {
+        UpdateGlobalCtx::add_whitelist(ctx, whitelist)
+    }
+
+    /// Preslae
+    pub fn buy_presale(
+        ctx: Context<BuyPresaleCtx>,
+        usdc_amount: u64,
+        kyc_verified: bool,
+    ) -> Result<()> {
+        BuyPresaleCtx::handler(ctx, usdc_amount, kyc_verified)
     }
 
     /// Multisig
@@ -47,5 +66,9 @@ pub mod veralux {
     /// Governance
     pub fn submit_proposal(ctx: Context<SubmitProposalCtx>, ix: ProposalIx) -> Result<()> {
         SubmitProposalCtx::handler(ctx, ix)
+    }
+
+    pub fn execute_proposal(ctx: Context<ExecuteProposalCtx>) -> Result<()> {
+        ExecuteProposalCtx::handler(ctx)
     }
 }

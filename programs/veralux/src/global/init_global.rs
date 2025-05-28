@@ -1,5 +1,4 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::Mint;
 
 use crate::{MultisigState, ReentrancyGuard, GLOBAL_SEED, INITIAL_TAX_RATE, MULTISIG_SEED};
 
@@ -28,9 +27,6 @@ pub struct InitGlobalCtx<'info> {
     )]
     pub multisig: Account<'info, MultisigState>,
 
-    #[account(mut)]
-    pub veralux_token_mint: Account<'info, Mint>,
-
     system_program: Program<'info, System>,
 }
 
@@ -40,14 +36,19 @@ impl InitGlobalCtx<'_> {
         drop(guard);
 
         let global = &mut ctx.accounts.global;
+        let multisig = &ctx.accounts.multisig;
 
-        global.total_presale_sold = 0;
+        global.admin = multisig.key();
+        global.admin_wallet = ctx.accounts.payer.key();
+        global.total_public_presale_sold = 0;
+        global.total_private_presale_sold = 0;
         global.proposal_count = 0;
         global.paused = true;
         global.pause_reason = Vec::new();
         global.presale_active = false;
         global.tax_rate = INITIAL_TAX_RATE;
         global.is_processing = false;
+        global.total_boting_power = 0;
 
         Ok(())
     }

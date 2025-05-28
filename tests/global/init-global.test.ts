@@ -1,6 +1,5 @@
 import { PublicKey, Transaction } from "@solana/web3.js";
-import { executeTransaction, GLOBAL_SEED, MockFactory, MULTISIG_SEED } from "../../sdk/common";
-import { getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
+import { executeTransaction, GLOBAL_SEED, MockFactory } from "../../sdk/common";
 
 beforeAll(async () => {
   await MockFactory.create();
@@ -8,28 +7,13 @@ beforeAll(async () => {
 
 describe.skip("Global Init Tests", () => {
   it("should initialize the global", async () => {
-    const { program, backendWallet, treasuryWallet, tokenMint, connection } =
-      MockFactory.mockFactory;
-
-    // const [treasuryAuthorityPda] = PublicKey.findProgramAddressSync(
-    //   [Buffer.from("treasury"), treasuryWallet.publicKey.toBuffer()],
-    //   program.programId
-    // );
-
-    // const treasuryTokenAccount = await getOrCreateAssociatedTokenAccount(
-    //   connection,
-    //   treasuryWallet.payer,
-    //   tokenMint,
-    //   treasuryAuthorityPda,
-    //   true
-    // );
+    const { program, backendWallet, connection } = MockFactory.mockFactory;
 
     const tx = new Transaction();
     const ix = await program.methods
       .initGlobal()
       .accounts({
         payer: backendWallet.publicKey,
-        veraluxTokenMint: tokenMint,
       })
       .instruction();
 

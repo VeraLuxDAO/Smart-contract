@@ -1,32 +1,57 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
 
-use crate::{GlobalState, VeraluxError, PRESALE_SEED};
+use crate::{
+    GlobalState, PresalePurchaseEvent, ReentrancyGuard, VeraluxError, PRESALE_MAX_PER_WALLET,
+    PRESALE_PURCHASE, PRESALE_VESTING, PRIVATE_PRESALE_PRICE_PER_TOKEN, PRIVATE_PRESALE_SUPPLY,
+    PUBLIC_PRESALE_PRICE_PER_TOKEN, PUBLIC_PRESALE_SUPPLY, TOKEN_DECIMALS,
+    WHITELIST_MAX_PER_WALLET,
+};
 
-use super::PresalePurchase;
+use super::{PresalePurchase, PresaleVesting};
 
 #[derive(Accounts)]
 pub struct BuyPresaleCtx<'info> {
     #[account(mut)]
-    pub purchaser: Signer<'info>,
+    pub buyer: Signer<'info>,
 
-    #[account(mut, constraint = global.presale_active @ VeraluxError::PresaleNotActive)]
+    #[account(
+        mut,
+        constraint = global.presale_active @ VeraluxError::PresaleNotActive,
+        constraint = !global.paused @ VeraluxError::Paused
+    )]
     pub global: Account<'info, GlobalState>,
 
     #[account(
         init_if_needed,
-        payer = purchaser,
+        payer = buyer,
         space = 8 + PresalePurchase::INIT_SPACE,
-        seeds = [PRESALE_SEED, purchaser.key().as_ref()],
+        seeds = [PRESALE_PURCHASE, buyer.key().as_ref()],
         bump,
     )]
     pub presale_purchase: Account<'info, PresalePurchase>,
 
-    #[account(mut)]
-    pub purchaser_usdt: Account<'info, TokenAccount>,
+    #[account(
+        init_if_needed,
+        payer = buyer,
+        space = 8 + PresaleVesting::INIT_SPACE,
+        seeds = [PRESALE_VESTING, buyer.key().as_ref()],
+        bump
+    )]
+    pub presale_vesting: Account<'info, PresaleVesting>,
 
-    #[account(mut, constraint = global.treasury_usdt_account == treasury_usdt.key() @ VeraluxError::InvalidTreasury)]
-    pub treasury_usdt: Account<'info, TokenAccount>,
+    #[account(
+        mut,
+        constraint = buyer_usdc_account.owner == buyer.key() @ VeraluxError::BuyerNotOwner,
+        constraint = buyer_usdc_account.amount > 0 @ VeraluxError::NotEnoughUSDTBuyer
+    )]
+    pub buyer_usdc_account: Account<'info, TokenAccount>,
+
+    #[account(
+        mut,
+        constraint = admin_usdc_account.owner == global.admin_wallet @ VeraluxError::NotAdminUSDTOwner
+    )]
+    pub admin_usdc_account: Account<'info, TokenAccount>,
 
     token_program: Program<'info, Token>,
     system_program: Program<'info, System>,
@@ -35,65 +60,148 @@ pub struct BuyPresaleCtx<'info> {
 impl BuyPresaleCtx<'_> {
     pub fn handler(
         ctx: Context<BuyPresaleCtx>,
-        usdt_amount: u64,
+        usdc_amount: u64,
         kyc_verified: bool,
     ) -> Result<()> {
-        let global = &mut ctx.accounts.global;
-        let presale = &mut ctx.accounts.presale_purchase;
-        let now = Clock::get()?.unix_timestamp;
-
-        require!(global.presale_active, VeraluxError::PresaleNotActive);
-        require!(now >= global.launch_timestamp, VeraluxError::PresaleEnded);
-
-        require!(global.presale_active, VeraluxError::PresaleNotActive);
+        let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
+        drop(guard);
 
         require!(
-            usdt_amount < 1000 || kyc_verified,
+            usdc_amount < 1000 * 10u64.pow(6) || kyc_verified,
             VeraluxError::KYCRequired
         );
 
-        let token_price = global.token_price_in_usdt;
-        let token_amount = usdt_amount
-            .checked_mul(1_000_000)
-            .ok_or(VeraluxError::ArithmeticOverflow)?
-            .checked_div(token_price)
-            .ok_or(VeraluxError::ArithmeticOverflow)?;
+        let global = &mut ctx.accounts.global;
+        let buyer = ctx.accounts.buyer.key();
+        let is_whitelisted = global.whitelist.contains(&buyer);
 
-        let new_total = global
-            .presale_total_sold
-            .checked_add(token_amount)
+        let purchase = &mut ctx.accounts.presale_purchase;
+        let vesting = &mut ctx.accounts.presale_vesting;
+
+        let mut remaining_usdc = usdc_amount;
+        let mut private_tokens = 0u64;
+        let mut public_tokens = 0u64;
+
+        let already_private = purchase.total_private_purchased;
+        let already_total = purchase
+            .total_purchased
+            .checked_add(already_private)
             .ok_or(VeraluxError::ArithmeticOverflow)?;
 
         require!(
-            new_total <= global.total_presale_cap,
-            VeraluxError::PresaleSupplyExceeded
+            already_total < PRESALE_MAX_PER_WALLET,
+            VeraluxError::PresaleMaxPerWalletExceeded
         );
 
-        let user_total = presale
-            .total_purchased
-            .checked_add(token_amount)
+        if is_whitelisted {
+            let private_remaining = WHITELIST_MAX_PER_WALLET.saturating_sub(already_private);
+            let private_global_remaining =
+                PRIVATE_PRESALE_SUPPLY.saturating_sub(global.total_private_presale_sold);
+            let eligible_private_token = private_remaining.min(private_global_remaining);
+
+            let max_private_cost = eligible_private_token
+                .checked_mul(PRIVATE_PRESALE_PRICE_PER_TOKEN)
+                .unwrap_or(0)
+                .checked_div(10u64.pow(TOKEN_DECIMALS as u32))
+                .unwrap_or(0);
+
+            let actual_private_usdc = remaining_usdc.min(max_private_cost);
+
+            private_tokens = actual_private_usdc
+                .checked_mul(10u64.pow(TOKEN_DECIMALS as u32))
+                .unwrap_or(0)
+                .checked_div(PRIVATE_PRESALE_PRICE_PER_TOKEN)
+                .unwrap_or(0);
+
+            remaining_usdc = remaining_usdc.saturating_sub(actual_private_usdc);
+        }
+
+        if remaining_usdc > 0 {
+            let public_token_amount = remaining_usdc
+                .checked_mul(10u64.pow(TOKEN_DECIMALS as u32))
+                .unwrap_or(0)
+                .checked_div(PUBLIC_PRESALE_PRICE_PER_TOKEN)
+                .unwrap_or(0);
+
+            let public_global_remaining =
+                PUBLIC_PRESALE_SUPPLY.saturating_sub(global.total_public_presale_sold);
+
+            let wallet_remaining_cap = PRESALE_MAX_PER_WALLET
+                .saturating_sub(already_private)
+                .saturating_sub(private_tokens);
+
+            public_tokens = public_token_amount
+                .min(public_global_remaining)
+                .min(wallet_remaining_cap);
+
+            let public_usdc_used = public_tokens
+                .checked_mul(PUBLIC_PRESALE_PRICE_PER_TOKEN)
+                .unwrap_or(0)
+                .checked_div(10u64.pow(TOKEN_DECIMALS as u32))
+                .unwrap_or(0);
+
+            remaining_usdc = remaining_usdc.saturating_sub(public_usdc_used);
+
+            require!(remaining_usdc == 0, VeraluxError::ArithmeticOverflow);
+        }
+
+        let total_tokens = private_tokens
+            .checked_add(public_tokens)
             .ok_or(VeraluxError::ArithmeticOverflow)?;
 
+        require!(total_tokens > 0, VeraluxError::InvalidPurchaseAmount);
+
         require!(
-            user_total <= global.max_per_wallet,
-            VeraluxError::PresaleSupplyExceeded
+            already_total.checked_add(total_tokens).unwrap_or(u64::MAX) <= PRESALE_MAX_PER_WALLET,
+            VeraluxError::PresaleMaxPerWalletExceeded
         );
 
         token::transfer(
             CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
                 token::Transfer {
-                    from: ctx.accounts.purchaser_usdt.to_account_info(),
-                    to: ctx.accounts.treasury_usdt.to_account_info(),
-                    authority: ctx.accounts.purchaser.to_account_info(),
+                    from: ctx.accounts.buyer_usdc_account.to_account_info(),
+                    to: ctx.accounts.admin_usdc_account.to_account_info(),
+                    authority: ctx.accounts.buyer.to_account_info(),
                 },
             ),
-            usdt_amount,
+            usdc_amount,
         )?;
 
-        presale.user = ctx.accounts.purchaser.key();
-        presale.total_purchased = user_total;
-        global.presale_total_sold = new_total;
+        purchase.wallet = ctx.accounts.buyer.key();
+        purchase.total_purchased = purchase
+            .total_purchased
+            .checked_add(public_tokens)
+            .ok_or(VeraluxError::ArithmeticOverflow)?;
+
+        if is_whitelisted && private_tokens > 0 {
+            purchase.total_private_purchased = already_private
+                .checked_add(private_tokens)
+                .ok_or(VeraluxError::ArithmeticOverflow)?;
+
+            global.total_private_presale_sold = global
+                .total_private_presale_sold
+                .checked_add(private_tokens)
+                .ok_or(VeraluxError::ArithmeticOverflow)?;
+        }
+
+        if public_tokens > 0 {
+            global.total_public_presale_sold = global
+                .total_public_presale_sold
+                .checked_add(public_tokens)
+                .ok_or(VeraluxError::ArithmeticOverflow)?;
+        }
+
+        vesting.total_amount = vesting
+            .total_amount
+            .checked_add(total_tokens)
+            .ok_or(VeraluxError::ArithmeticOverflow)?;
+
+        emit!(PresalePurchaseEvent {
+            buyer: purchase.wallet,
+            usdc_amount,
+            token_amount: total_tokens
+        });
 
         Ok(())
     }
