@@ -39,24 +39,45 @@ pub mod veralux {
         UpdateGlobalCtx::start_presale(ctx)
     }
 
+    pub fn stop_presale(ctx: Context<UpdateGlobalCtx>) -> Result<()> {
+        UpdateGlobalCtx::stop_presale(ctx)
+    }
+
     pub fn add_whitelist(ctx: Context<UpdateGlobalCtx>, whitelist: Pubkey) -> Result<()> {
         UpdateGlobalCtx::add_whitelist(ctx, whitelist)
+    }
+
+    pub fn update_launch_time(ctx: Context<UpdateGlobalCtx>, new_time_stamp: i64) -> Result<()> {
+        UpdateGlobalCtx::update_launch_time(ctx, new_time_stamp)
     }
 
     /// Preslae
     pub fn buy_presale(
         ctx: Context<BuyPresaleCtx>,
         usdc_amount: u64,
-        kyc_verified: bool,
+        kyc_verified: bool
     ) -> Result<()> {
         BuyPresaleCtx::handler(ctx, usdc_amount, kyc_verified)
+    }
+
+    pub fn claim_presale(ctx: Context<ClaimPresaleCtx>) -> Result<()> {
+        ClaimPresaleCtx::handler(ctx)
+    }
+
+    /// Token Staking
+    pub fn stake_token(ctx: Context<StakeCtx>, amount: u64) -> Result<()> {
+        StakeCtx::handler(ctx, amount)
+    }
+
+    pub fn unstake_token(ctx: Context<UnstakeCtx>) -> Result<()> {
+        UnstakeCtx::handler(ctx)
     }
 
     /// Multisig
     pub fn init_multisig(
         ctx: Context<InitMultisigCtx>,
         owners: Vec<Pubkey>,
-        threshold: u8,
+        threshold: u8
     ) -> Result<()> {
         InitMultisigCtx::handler(ctx, owners, threshold)
     }

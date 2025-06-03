@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 
 use crate::{
     validate_multisig, GlobalUpdatedEvent, MultisigState, ReentrancyGuard, StartedPresaleEvent,
-    VeraluxError, WhitelistAddedEvent, MULTISIG_SEED,
+    UpdateLaunchTimeEvent, VeraluxError, WhitelistAddedEvent, MULTISIG_SEED,
 };
 
 use super::{GlobalIx, GlobalState};
@@ -98,6 +98,32 @@ impl UpdateGlobalCtx<'_> {
         Ok(())
     }
 
+    pub fn stop_presale(ctx: Context<UpdateGlobalCtx>) -> Result<()> {
+        let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
+
+        let multisig = &mut ctx.accounts.multisig;
+        let signer_keys: Vec<Pubkey> = ctx
+            .remaining_accounts
+            .iter()
+            .filter(|acc| acc.is_signer)
+            .map(|acc| acc.key())
+            .collect();
+
+        validate_multisig(multisig, &signer_keys)?;
+
+        drop(guard);
+
+        let global = &mut ctx.accounts.global;
+
+        global.presale_active = false;
+
+        emit!(StartedPresaleEvent {
+            started_presale: global.presale_active
+        });
+
+        Ok(())
+    }
+
     pub fn add_whitelist(ctx: Context<UpdateGlobalCtx>, whitelist: Pubkey) -> Result<()> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
@@ -128,6 +154,33 @@ impl UpdateGlobalCtx<'_> {
             total_whitelisted: global.whitelist.len() as u8
         });
 
+        Ok(())
+    }
+
+    pub fn update_launch_time(ctx: Context<UpdateGlobalCtx>, new_time_stamp: i64) -> Result<()> {
+        let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
+
+        let multisig = &mut ctx.accounts.multisig;
+        let signer_keys: Vec<Pubkey> = ctx
+            .remaining_accounts
+            .iter()
+            .filter(|acc| acc.is_signer)
+            .map(|acc| acc.key())
+            .collect();
+
+        validate_multisig(multisig, &signer_keys)?;
+
+        drop(guard);
+
+        let global = &mut ctx.accounts.global;
+
+        require!(!global.presale_active, VeraluxError::PresaleStarted);
+
+        global.launch_timestamp = new_time_stamp;
+
+        emit!(UpdateLaunchTimeEvent {
+            launchtime: global.launch_timestamp
+        });
         Ok(())
     }
 }

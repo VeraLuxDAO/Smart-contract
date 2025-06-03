@@ -211,6 +211,89 @@
       ]
     },
     {
+      "name": "claim_presale",
+      "discriminator": [
+        82,
+        240,
+        122,
+        5,
+        109,
+        66,
+        86,
+        190
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "vesting",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  112,
+                  114,
+                  101,
+                  115,
+                  97,
+                  108,
+                  101,
+                  45,
+                  118,
+                  101,
+                  115,
+                  116,
+                  105,
+                  110,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "admin_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        }
+      ],
+      "args": []
+    },
+    {
       "name": "confirm_multisig",
       "discriminator": [
         165,
@@ -555,6 +638,92 @@
       ]
     },
     {
+      "name": "stake_token",
+      "docs": [
+        "Token Staking"
+      ],
+      "discriminator": [
+        191,
+        127,
+        193,
+        101,
+        37,
+        96,
+        87,
+        211
+      ],
+      "accounts": [
+        {
+          "name": "authority",
+          "signer": true
+        },
+        {
+          "name": "user",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "staker",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  116,
+                  97,
+                  107,
+                  101,
+                  114,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "user"
+              }
+            ]
+          }
+        },
+        {
+          "name": "user_token_account",
+          "writable": true
+        },
+        {
+          "name": "admin_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "start_presale",
       "discriminator": [
         57,
@@ -565,6 +734,66 @@
         254,
         45,
         223
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "stop_presale",
+      "discriminator": [
+        222,
+        229,
+        150,
+        226,
+        199,
+        189,
+        235,
+        89
       ],
       "accounts": [
         {
@@ -798,6 +1027,71 @@
           }
         }
       ]
+    },
+    {
+      "name": "update_launch_time",
+      "discriminator": [
+        183,
+        126,
+        24,
+        138,
+        27,
+        116,
+        107,
+        123
+      ],
+      "accounts": [
+        {
+          "name": "payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "global",
+          "writable": true
+        },
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103,
+                  45,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "payer"
+              }
+            ]
+          }
+        }
+      ],
+      "args": [
+        {
+          "name": "new_time_stamp",
+          "type": "i64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -878,9 +1172,35 @@
         248,
         29
       ]
+    },
+    {
+      "name": "Staker",
+      "discriminator": [
+        171,
+        229,
+        193,
+        85,
+        67,
+        177,
+        151,
+        4
+      ]
     }
   ],
   "events": [
+    {
+      "name": "ClaimRewardsEvent",
+      "discriminator": [
+        224,
+        197,
+        51,
+        113,
+        233,
+        72,
+        117,
+        183
+      ]
+    },
     {
       "name": "GlobalUpdatedEvent",
       "discriminator": [
@@ -921,6 +1241,19 @@
       ]
     },
     {
+      "name": "NoRewardsEvent",
+      "discriminator": [
+        4,
+        124,
+        182,
+        217,
+        207,
+        116,
+        139,
+        78
+      ]
+    },
+    {
       "name": "PresalePurchaseEvent",
       "discriminator": [
         30,
@@ -947,6 +1280,19 @@
       ]
     },
     {
+      "name": "StakeEvent",
+      "discriminator": [
+        226,
+        134,
+        188,
+        173,
+        19,
+        33,
+        75,
+        175
+      ]
+    },
+    {
       "name": "StartedPresaleEvent",
       "discriminator": [
         173,
@@ -957,6 +1303,32 @@
         102,
         69,
         72
+      ]
+    },
+    {
+      "name": "UpdateLaunchTimeEvent",
+      "discriminator": [
+        6,
+        202,
+        120,
+        178,
+        43,
+        1,
+        254,
+        109
+      ]
+    },
+    {
+      "name": "VotingPowerUpdatedEvent",
+      "discriminator": [
+        238,
+        178,
+        84,
+        194,
+        74,
+        49,
+        58,
+        91
       ]
     },
     {
@@ -1011,176 +1383,222 @@
     },
     {
       "code": 6007,
+      "name": "UninitializedAccount",
+      "msg": "Account not initialized"
+    },
+    {
+      "code": 6008,
+      "name": "VestingNotStarted",
+      "msg": "Vesting period has not started"
+    },
+    {
+      "code": 6009,
+      "name": "PresaleStarted",
+      "msg": "Presale started"
+    },
+    {
+      "code": 6010,
       "name": "DescriptionTooLong",
       "msg": "Description too long"
     },
     {
-      "code": 6008,
+      "code": 6011,
       "name": "TooManyProposalValues",
       "msg": "Too many proposal values"
     },
     {
-      "code": 6009,
+      "code": 6012,
       "name": "ProposalAlreadyExecuted",
       "msg": "Proposal has already been executed"
     },
     {
-      "code": 6010,
+      "code": 6013,
       "name": "VotingPeriodNotEnded",
       "msg": "Voting period has not ended"
     },
     {
-      "code": 6011,
+      "code": 6014,
       "name": "NoticePeriodNotMet",
       "msg": "Notice period for proposal execution not met"
     },
     {
-      "code": 6012,
+      "code": 6015,
       "name": "ReentrancyGuardTriggered",
       "msg": "Reentrancy guard triggered: Operation already in progress"
     },
     {
-      "code": 6013,
+      "code": 6016,
       "name": "UnauthorizedMultisig",
       "msg": "Unauthorized: Multisig admin is not the first owner"
     },
     {
-      "code": 6014,
+      "code": 6017,
       "name": "InsufficientSigners",
       "msg": "Unauthorized: Insufficient signers for multisig operation"
     },
     {
-      "code": 6015,
+      "code": 6018,
       "name": "SignerNotOwner",
       "msg": "Unauthorized: Signer is not a multisig owner"
     },
     {
-      "code": 6016,
+      "code": 6019,
       "name": "BuyerNotOwner",
       "msg": "Unauthorized: Buyer is not a account owner"
     },
     {
-      "code": 6017,
+      "code": 6020,
       "name": "NotAdminUSDTOwner",
       "msg": "Unauthorized: USDT account owner is not a admin"
     },
     {
-      "code": 6018,
+      "code": 6021,
+      "name": "InvalidAdminTokenAthurity",
+      "msg": "Unauthorized: Admin token account owner is invalid"
+    },
+    {
+      "code": 6022,
+      "name": "InvalidUserTokenAthurity",
+      "msg": "Unauthorized: User token account owner is invalid"
+    },
+    {
+      "code": 6023,
       "name": "TimeLockNotMet",
       "msg": "Time lock requirement not met"
     },
     {
-      "code": 6019,
+      "code": 6024,
       "name": "InvalidThreshold",
       "msg": "Invalid threshold"
     },
     {
-      "code": 6020,
+      "code": 6025,
       "name": "TooFewOwners",
       "msg": "Too few owners in multisig"
     },
     {
-      "code": 6021,
+      "code": 6026,
       "name": "NotEnoughUSDTBuyer",
       "msg": "Not enough usdt amount in buyer"
     },
     {
-      "code": 6022,
+      "code": 6027,
       "name": "PresaleSupplyExceeded",
       "msg": "Presale supply exceeded"
     },
     {
-      "code": 6023,
+      "code": 6028,
       "name": "PresaleMaxPerWalletExceeded",
       "msg": "Presale maximum per wallet exceeded"
     },
     {
-      "code": 6024,
+      "code": 6029,
+      "name": "InvalidTier",
+      "msg": "Invalid tier"
+    },
+    {
+      "code": 6030,
       "name": "InvalidAuthority",
       "msg": "Invalid authority"
     },
     {
-      "code": 6025,
+      "code": 6031,
       "name": "PresaleAlreadyInitialized",
       "msg": "Presale already initialized"
     },
     {
-      "code": 6026,
+      "code": 6032,
       "name": "InvalidTreasury",
       "msg": "Invalid treasury"
     },
     {
-      "code": 6027,
+      "code": 6033,
       "name": "ArithmeticOverflow",
       "msg": "Arithmetic overflow"
     },
     {
-      "code": 6028,
+      "code": 6034,
       "name": "KYCRequired",
       "msg": "KYC required"
     },
     {
-      "code": 6029,
+      "code": 6035,
       "name": "InvalidUser",
       "msg": "Invalid user"
     },
     {
-      "code": 6030,
+      "code": 6036,
       "name": "PresaleNotStarted",
       "msg": "Presale not started"
     },
     {
-      "code": 6031,
+      "code": 6037,
       "name": "PresaleAlreadyClaimed",
       "msg": "Presale already claimed"
     },
     {
-      "code": 6032,
+      "code": 6038,
       "name": "NothingToClaim",
       "msg": "Nothing to claim"
     },
     {
-      "code": 6033,
+      "code": 6039,
       "name": "InvalidUserTokenAccount",
       "msg": "Invalid user token account"
     },
     {
-      "code": 6034,
+      "code": 6040,
       "name": "PresaleEnded",
       "msg": "Presale ended"
     },
     {
-      "code": 6035,
+      "code": 6041,
       "name": "InvalidTreasuryTokenAccount",
       "msg": "Invalid treasury token account"
     },
     {
-      "code": 6036,
+      "code": 6042,
       "name": "InvalidOwnersCount",
       "msg": "Invalid owners count"
     },
     {
-      "code": 6037,
+      "code": 6043,
       "name": "InvalidMultisigAdmin",
       "msg": "Invalid multisig admin"
     },
     {
-      "code": 6038,
+      "code": 6044,
       "name": "StakingAmountZero",
       "msg": "Staking amount is zero"
     },
     {
-      "code": 6039,
+      "code": 6045,
       "name": "InvalidStakingTier",
       "msg": "Invalid staking tier"
     },
     {
-      "code": 6040,
+      "code": 6046,
       "name": "Unauthorized",
       "msg": "Unauthorized"
     }
   ],
   "types": [
+    {
+      "name": "ClaimRewardsEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
     {
       "name": "GlobalIx",
       "type": {
@@ -1269,7 +1687,7 @@
             "type": "u32"
           },
           {
-            "name": "total_boting_power",
+            "name": "total_voting_power",
             "type": "u64"
           },
           {
@@ -1365,6 +1783,22 @@
           {
             "name": "threshold",
             "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "NoRewardsEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "reason",
+            "type": "string"
           }
         ]
       }
@@ -1540,6 +1974,50 @@
       }
     },
     {
+      "name": "StakeEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "user",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Staker",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "start_time",
+            "type": "i64"
+          },
+          {
+            "name": "last_claim",
+            "type": "i64"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "tier",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
       "name": "StartedPresaleEvent",
       "type": {
         "kind": "struct",
@@ -1547,6 +2025,34 @@
           {
             "name": "started_presale",
             "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UpdateLaunchTimeEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "launchtime",
+            "type": "i64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "VotingPowerUpdatedEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "old_power",
+            "type": "u64"
+          },
+          {
+            "name": "new_power",
+            "type": "u64"
           }
         ]
       }

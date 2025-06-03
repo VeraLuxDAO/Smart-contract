@@ -1,99 +1,100 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Token, TokenAccount};
 
-use crate::{GlobalState, VeraluxError, PRESALE_SEED, TREASURY_SEED};
+use crate::{
+    ClaimRewardsEvent, GlobalState, NoRewardsEvent, ReentrancyGuard, VeraluxError, PRESALE_VESTING,
+};
 
-use super::PresalePurchase;
+use super::PresaleVesting;
 
 #[derive(Accounts)]
 pub struct ClaimPresaleCtx<'info> {
+    pub authority: Signer<'info>,
     #[account(mut)]
     pub user: Signer<'info>,
 
-    #[account(mut, constraint = global.presale_active @ VeraluxError::PresaleNotActive)]
+    #[account(
+        mut,
+        constraint = !global.presale_active @ VeraluxError::PresaleEnded,
+        constraint = !global.paused @ VeraluxError::Paused
+    )]
     pub global: Account<'info, GlobalState>,
 
     #[account(
         mut,
-        seeds = [PRESALE_SEED, user.key().as_ref()],
+        seeds = [PRESALE_VESTING, user.key().as_ref()],
         bump,
-        constraint = presale_purchase.user == user.key() @ VeraluxError::InvalidUser
+        constraint = vesting.total_amount > 0 @ VeraluxError::UninitializedAccount
     )]
-    pub presale_purchase: Account<'info, PresalePurchase>,
+    pub vesting: Account<'info, PresaleVesting>,
 
     #[account(
         mut,
-        constraint = user_token_account.owner == user.key() @ VeraluxError::InvalidUserTokenAccount
+        constraint = user_token_account.owner == user.key()  @ VeraluxError::InvalidUserTokenAthurity
     )]
     pub user_token_account: Account<'info, TokenAccount>,
 
-    #[account(mut, constraint = treasury_token_account.owner == treasury_authority.key() @ VeraluxError::InvalidTreasuryTokenAccount)]
-    pub treasury_token_account: Account<'info, TokenAccount>,
-
-    /// CHECK: PDA authority will sign for treasury transfers
     #[account(
-        seeds = [TREASURY_SEED, global.treasury_wallet.as_ref()],
-        bump
+        mut,
+        constraint = admin_token_account.owner == authority.key()  @ VeraluxError::InvalidAdminTokenAthurity
     )]
-    pub treasury_authority: AccountInfo<'info>,
+    pub admin_token_account: Account<'info, TokenAccount>,
 
     token_program: Program<'info, Token>,
-    system_program: Program<'info, System>,
 }
 
 impl ClaimPresaleCtx<'_> {
     pub fn handler(ctx: Context<ClaimPresaleCtx>) -> Result<()> {
+        let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
+        drop(guard);
+
         let global = &mut ctx.accounts.global;
-        let presale = &mut ctx.accounts.presale_purchase;
+        let vesting = &mut ctx.accounts.vesting;
         let now = Clock::get()?.unix_timestamp;
 
-        require!(now >= global.launch_timestamp, VeraluxError::PresaleEnded);
-
-        let total = presale.total_purchased;
-        let vesting = &global.presale_vesting;
-
-        let weeks_passed = ((now - global.launch_timestamp) / 604800) as u8;
-        let mut unlocked_pct = vesting.initial_unlock_pct;
-
-        unlocked_pct =
-            unlocked_pct.saturating_add(weeks_passed.saturating_mul(vesting.weekly_unlock_pct));
-        unlocked_pct = unlocked_pct.min(100);
-
-        let unlocked_amount = total
-            .checked_mul(unlocked_pct as u64)
-            .ok_or(VeraluxError::ArithmeticOverflow)?
-            .checked_div(100)
+        let time_since_launch = now
+            .checked_sub(global.launch_timestamp)
             .ok_or(VeraluxError::ArithmeticOverflow)?;
 
-        let claimable = unlocked_amount
-            .checked_sub(presale.total_claimed)
-            .ok_or(VeraluxError::NothingToClaim)?;
+        require!(time_since_launch >= 0, VeraluxError::VestingNotStarted);
 
-        require!(claimable > 0, VeraluxError::NothingToClaim);
+        let weeks_passed = (time_since_launch / (7 * 86400)) as u64;
+        let unlock_percent = 100.min(10 + 10 * weeks_passed);
+        let claimable = (vesting.total_amount as u128 * unlock_percent as u128 / 100)
+            .checked_sub(vesting.claimed_amount as u128)
+            .ok_or(VeraluxError::ArithmeticOverflow)?
+            .try_into()
+            .map_err(|_| VeraluxError::ArithmeticOverflow)?;
 
-        let seeds = &[
-            TREASURY_SEED,
-            global.treasury_wallet.as_ref(),
-            &[ctx.bumps.treasury_authority],
-        ];
+        if claimable == 0 {
+            emit!(NoRewardsEvent {
+                user: ctx.accounts.user.key(),
+                reason: "No tokens available to claim".to_string()
+            });
+            return Ok(());
+        }
+
+        vesting.claimed_amount = vesting
+            .claimed_amount
+            .checked_add(claimable)
+            .ok_or(VeraluxError::ArithmeticOverflow)?;
 
         token::transfer(
-            CpiContext::new_with_signer(
+            CpiContext::new(
                 ctx.accounts.token_program.to_account_info(),
                 token::Transfer {
-                    from: ctx.accounts.treasury_token_account.to_account_info(),
+                    from: ctx.accounts.admin_token_account.to_account_info(),
                     to: ctx.accounts.user_token_account.to_account_info(),
-                    authority: ctx.accounts.treasury_authority.to_account_info(),
+                    authority: ctx.accounts.authority.to_account_info(),
                 },
-                &[seeds],
             ),
             claimable,
         )?;
 
-        presale.total_claimed = presale
-            .total_claimed
-            .checked_add(claimable)
-            .ok_or(VeraluxError::ArithmeticOverflow)?;
+        emit!(ClaimRewardsEvent {
+            user: ctx.accounts.user.key(),
+            amount: claimable,
+        });
 
         Ok(())
     }

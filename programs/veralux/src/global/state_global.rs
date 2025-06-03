@@ -26,6 +26,11 @@ pub struct GlobalState {
     // DAO
     pub tax_rate: u64,
 
+    pub reduction_thresholds: [u64; 3],
+    pub reduction_factors: [u64; 4],
+    pub staking_rewards: [u64; 4],
+    pub staking_tiers: [u64; 4],
+
     // Whitelist
     #[max_len(50)]
     pub whitelist: Vec<Pubkey>,
@@ -34,6 +39,18 @@ pub struct GlobalState {
     pub pause_reason: Vec<u8>,
     pub is_processing: bool,
     pub paused: bool,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct Treasury {
+    pub staking_pool: u64,
+    pub airdrop_pool: u64,
+    pub governance_reserve: u64,
+    pub marketing_fund: u64,
+    pub emergency_fund: u64,
+    pub liquidity_incentive: u64,
+    pub team_pool: u64,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize)]

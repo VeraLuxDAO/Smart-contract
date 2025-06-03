@@ -56,3 +56,26 @@ pub struct StakeEvent {
     pub amount: u64,
     pub tier: u8,
 }
+
+#[event]
+pub struct NoRewardsEvent {
+    pub user: Pubkey,
+    pub reason: String,
+}
+
+#[event]
+pub struct ClaimRewardsEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct UpdateLaunchTimeEvent {
+    pub launchtime: i64,
+}
+
+#[event]
+pub struct UnstakeEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+}

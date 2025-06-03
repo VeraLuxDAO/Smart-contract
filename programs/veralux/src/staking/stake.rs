@@ -1,9 +1,15 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount};
+use anchor_spl::token::{ self, Token, TokenAccount };
 
 use crate::{
-    calculate_tier, calculate_voting_power, GlobalState, ReentrancyGuard, StakeEvent, VeraluxError,
-    VotingPowerUpdatedEvent, STAKER_SEED,
+    calculate_tier,
+    calculate_voting_power,
+    GlobalState,
+    ReentrancyGuard,
+    StakeEvent,
+    VeraluxError,
+    VotingPowerUpdatedEvent,
+    STAKER_SEED,
 };
 
 use super::Staker;
@@ -27,22 +33,22 @@ pub struct StakeCtx<'info> {
         payer = user,
         space = 8 + Staker::INIT_SPACE,
         seeds = [STAKER_SEED, user.key().as_ref()],
-        bump,
+        bump
     )]
     pub staker: Account<'info, Staker>,
 
     #[account(
         mut,
-        constraint = user_token_account.owner == user.key(),
+        constraint = user_token_account.owner == user.key() @ VeraluxError::InvalidUserTokenAthurity,
         constraint = user_token_account.amount > 0 @ VeraluxError::StakingAmountZero,
     )]
     pub user_token_account: Account<'info, TokenAccount>,
 
     #[account(
         mut,
-        constraint = staking_token_account.owner == authority.key()
+        constraint = admin_token_account.owner == authority.key() @ VeraluxError::InvalidAdminTokenAthurity
     )]
-    pub staking_token_account: Account<'info, TokenAccount>,
+    pub admin_token_account: Account<'info, TokenAccount>,
 
     token_program: Program<'info, Token>,
     system_program: Program<'info, System>,
@@ -59,7 +65,7 @@ impl StakeCtx<'_> {
         let old_voting_power = if staker.start_time == 0 {
             0
         } else {
-            calculate_voting_power(staker, now)?
+            calculate_voting_power(staker, global, now)?
         };
 
         if staker.start_time == 0 {
@@ -67,8 +73,7 @@ impl StakeCtx<'_> {
             staker.last_claim = now;
             staker.amount = amount;
         } else {
-            staker.amount = staker
-                .amount
+            staker.amount = staker.amount
                 .checked_add(amount)
                 .ok_or(VeraluxError::ArithmeticOverflow)?;
         }
@@ -78,7 +83,7 @@ impl StakeCtx<'_> {
             .ok_or(VeraluxError::ArithmeticOverflow)?;
 
         staker.tier = calculate_tier(staker.amount, time_staked)?;
-        let new_voting_power = calculate_voting_power(staker, now)?;
+        let new_voting_power = calculate_voting_power(staker, global, now)?;
         let old_total = global.total_voting_power;
         global.total_voting_power = old_total
             .checked_sub(old_voting_power)
@@ -88,19 +93,16 @@ impl StakeCtx<'_> {
 
         emit!(VotingPowerUpdatedEvent {
             old_power: old_total,
-            new_power: global.total_voting_power
+            new_power: global.total_voting_power,
         });
 
         token::transfer(
-            CpiContext::new(
-                ctx.accounts.token_program.to_account_info(),
-                token::Transfer {
-                    from: ctx.accounts.user_token_account.to_account_info(),
-                    to: ctx.accounts.staking_token_account.to_account_info(),
-                    authority: ctx.accounts.user.to_account_info(),
-                },
-            ),
-            amount,
+            CpiContext::new(ctx.accounts.token_program.to_account_info(), token::Transfer {
+                from: ctx.accounts.user_token_account.to_account_info(),
+                to: ctx.accounts.admin_token_account.to_account_info(),
+                authority: ctx.accounts.user.to_account_info(),
+            }),
+            amount
         )?;
 
         emit!(StakeEvent {

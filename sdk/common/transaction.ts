@@ -70,13 +70,18 @@ export async function executeTransaction(
 export async function simulateTransaction(
   connection: Connection,
   tx: Transaction,
-  wallet: Wallet
+  wallet: Wallet,
+  signers?: Signer[]
 ): Promise<string> {
   if (!wallet.publicKey) {
     throw new Error("Wallet does not have a valid public key");
   }
 
   tx.feePayer = wallet.publicKey;
+  tx.recentBlockhash = (await connection.getLatestBlockhash()).blockhash;
+  if (signers) {
+    tx.sign(...signers);
+  }
 
   try {
     const simulateResponse: RpcResponseAndContext<SimulatedTransactionResponse> =
@@ -85,7 +90,9 @@ export async function simulateTransaction(
     const simulatedTransaction = simulateResponse.value;
 
     if (simulatedTransaction.err) {
-      throw new Error(`Simulation error: ${simulatedTransaction.err}`);
+      throw new Error(
+        `Simulation error: ${JSON.stringify(simulatedTransaction.err)}`
+      );
     }
 
     return (

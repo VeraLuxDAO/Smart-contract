@@ -19,6 +19,12 @@ pub enum VeraluxError {
     PresaleNotActive,
     #[msg("Presale purchase amount must be greater than zero.")]
     InvalidPurchaseAmount,
+    #[msg("Account not initialized")]
+    UninitializedAccount,
+    #[msg("Vesting period has not started")]
+    VestingNotStarted,
+    #[msg("Presale started")]
+    PresaleStarted,
 
     /// Governance errors
     #[msg("Description too long")]
@@ -47,6 +53,10 @@ pub enum VeraluxError {
     BuyerNotOwner,
     #[msg("Unauthorized: USDT account owner is not a admin")]
     NotAdminUSDTOwner,
+    #[msg("Unauthorized: Admin token account owner is invalid")]
+    InvalidAdminTokenAthurity,
+    #[msg("Unauthorized: User token account owner is invalid")]
+    InvalidUserTokenAthurity,
 
     /// Limit
     #[msg("Time lock requirement not met")]
@@ -61,10 +71,15 @@ pub enum VeraluxError {
     PresaleSupplyExceeded,
     #[msg("Presale maximum per wallet exceeded")]
     PresaleMaxPerWalletExceeded,
+    #[msg("Lock period not met")]
+    LockPeriodNotMet,
 
     /// Staking
     #[msg("Invalid tier")]
     InvalidTier,
+
+    #[msg("Insufficient funds in staking pool")]
+    InsufficientStakingPoolFunds,
 
     #[msg("Invalid authority")]
     InvalidAuthority,
