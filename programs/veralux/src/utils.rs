@@ -6,6 +6,7 @@ use crate::{
     GlobalState,
     MultisigState,
     Staker,
+    TransactionRecord,
     Treasury,
     VeraluxError,
     STAKING_DURATIONS,
@@ -154,4 +155,45 @@ pub fn get_pending_rewards(
         .try_into()
         .map_err(|_| VeraluxError::ArithmeticOverflow)?;
     Ok(reward)
+}
+
+pub fn advance_buckets(record: &mut TransactionRecord, now: i64) -> Result<()> {
+    const HOUR_SECONDS: i64 = 3600;
+    const DAY_HOURS: usize = 24;
+
+    if record.bucket_start_time == 0 {
+        record.bucket_start_time = now - (now % HOUR_SECONDS);
+        record.current_bucket_index = 0;
+        return Ok(());
+    }
+
+    let elapsed_seconds = now
+        .checked_sub(record.bucket_start_time)
+        .ok_or(VeraluxError::ArithmeticOverflow)?;
+    let hours_passed = (elapsed_seconds / HOUR_SECONDS) as u64;
+
+    if hours_passed == 0 {
+        return Ok(());
+    }
+
+    if hours_passed >= (DAY_HOURS as u64) {
+        record.sell_buckets = [0; DAY_HOURS];
+        record.transfer_buckets = [0; DAY_HOURS];
+        record.current_bucket_index = 0;
+        record.bucket_start_time = now - (now % HOUR_SECONDS);
+    } else {
+        let mut index = record.current_bucket_index as usize;
+        let steps = hours_passed as usize;
+        for _ in 0..steps {
+            index = (index + 1) % DAY_HOURS;
+            record.sell_buckets[index] = 0;
+            record.transfer_buckets[index] = 0;
+        }
+        record.current_bucket_index = index as u8;
+        record.bucket_start_time = record.bucket_start_time
+            .checked_add((hours_passed as i64) * HOUR_SECONDS)
+            .ok_or(VeraluxError::ArithmeticOverflow)?;
+    }
+
+    Ok(())
 }

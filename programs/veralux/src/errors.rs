@@ -37,6 +37,8 @@ pub enum VeraluxError {
     VotingPeriodNotEnded,
     #[msg("Notice period for proposal execution not met")]
     NoticePeriodNotMet,
+    #[msg("Transfer cooldown active")]
+    CooldownActive,
 
     /// Utility errors
     #[msg("Reentrancy guard triggered: Operation already in progress")]
@@ -80,6 +82,17 @@ pub enum VeraluxError {
 
     #[msg("Insufficient funds in staking pool")]
     InsufficientStakingPoolFunds,
+    #[msg("Insufficient staked amount for operation")]
+    InsufficientStakedAmount,
+
+    #[msg("Maximum sell transaction limit exceeded")]
+    MaxSellTxnLimitExceeded,
+    #[msg("Daily sell limit exceeded")]
+    DailySellLimitExceeded,
+    #[msg("Maximum transfer limit exceeded")]
+    MaxTransferLimitExceeded,
+    #[msg("Daily transfer limit exceeded")]
+    DailyTransferLimitExceeded,
 
     #[msg("Invalid authority")]
     InvalidAuthority,

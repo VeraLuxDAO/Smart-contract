@@ -1,5 +1,3 @@
-use anchor_lang::prelude::*;
-
 pub mod constraints;
 pub mod errors;
 pub mod events;
@@ -9,6 +7,8 @@ pub mod multisig;
 pub mod presale;
 pub mod staking;
 pub mod utils;
+pub mod lp_staking;
+pub mod vesting;
 
 pub use constraints::*;
 pub use errors::*;
@@ -19,6 +19,8 @@ pub use multisig::*;
 pub use presale::*;
 pub use staking::*;
 pub use utils::*;
+pub use lp_staking::*;
+pub use vesting::*;
 
 declare_id!("B7ey9pqVRrtFWDWLWuDr9VxD1VWdn1YviVg74vw4cPwq");
 
@@ -51,6 +53,22 @@ pub mod veralux {
         UpdateGlobalCtx::update_launch_time(ctx, new_time_stamp)
     }
 
+    pub fn init_pause(ctx: Context<InitPauseCtx>, reason: String) -> Result<()> {
+        InitPauseCtx::handler(ctx, reason)
+    }
+
+    pub fn confirm_pause(ctx: Context<ConfirmPauseCtx>) -> Result<()> {
+        ConfirmPauseCtx::handler(ctx)
+    }
+
+    pub fn init_resume(ctx: Context<InitResumeCtx>) -> Result<()> {
+        InitResumeCtx::handler(ctx)
+    }
+
+    pub fn confirm_resume(ctx: Context<ConfirmResumeCtx>) -> Result<()> {
+        ConfirmResumeCtx::handler(ctx)
+    }
+
     /// Preslae
     pub fn buy_presale(
         ctx: Context<BuyPresaleCtx>,
@@ -71,6 +89,23 @@ pub mod veralux {
 
     pub fn unstake_token(ctx: Context<UnstakeCtx>) -> Result<()> {
         UnstakeCtx::handler(ctx)
+    }
+
+    pub fn claim_rewards(ctx: Context<ClaimRewardsCtx>) -> Result<()> {
+        ClaimRewardsCtx::handler(ctx)
+    }
+
+    /// LP Token Staking
+    pub fn stake_lp_token(ctx: Context<StakeLPCtx>, amount: u64) -> Result<()> {
+        StakeLPCtx::handler(ctx, amount)
+    }
+
+    pub fn unstake_lp_token(ctx: Context<UnstakeLpCtx>, amount: u64) -> Result<()> {
+        UnstakeLpCtx::handler(ctx, amount)
+    }
+
+    pub fn claim_lp_rewards(ctx: Context<ClaimLPRewardsCtx>) -> Result<()> {
+        ClaimLPRewardsCtx::handler(ctx)
     }
 
     /// Multisig

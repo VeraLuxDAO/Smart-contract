@@ -5,9 +5,15 @@ pub const MULTISIG_SEED: &[u8] = b"multisig-authority";
 pub const TREASURY_SEED: &[u8] = b"treasury-authority";
 pub const PENDING_MULTISIG_SEED: &[u8] = b"pending-multisig-authority";
 pub const STAKER_SEED: &[u8] = b"staker-authority";
+pub const LP_STAKER_SEED: &[u8] = b"lp-staker-authority";
 pub const PROPOSAL_SEED: &[u8] = b"proposal-authority";
+pub const TXN_RECORD: &[u8] = b"txn-record-authority";
+pub const PENDING_PAUSE: &[u8] = b"pending-pause-authority";
+pub const PENDING_RESUME: &[u8] = b"pending-resume-authority";
 
 pub const TOKEN_DECIMALS: u8 = 9;
+
+pub const TOTAL_SUPPLY: u64 = 1_000_000_000 * (10u64).pow(TOKEN_DECIMALS as u32);
 
 // Presale
 pub const PUBLIC_PRESALE_PRICE_PER_TOKEN: u64 = 1600; // 0.0016 USDC
@@ -57,3 +63,13 @@ pub const INITIAL_TAX_RATE: u64 = 500;
 pub const PENDING_MULTISIG_PERIOD: u32 = 24 * 3600; // 24h
 pub const PROPOSAL_END_PERIOD: u32 = 14 * 86400; // 14 day
 pub const PROPOSAL_EXECUTION_PERIOD: u32 = 3 * 86400; // 3 day
+
+pub const TXN_COOLDOWN: i64 = 60;
+
+// Transactionlimits
+pub const MAX_SELL_TXN_LIMIT: u64 = TOTAL_SUPPLY / 200; // 0.5%
+pub const DAILY_SELL_LIMIT: u64 = TOTAL_SUPPLY / 200; // 0.5%
+pub const MAX_TRANSFER_LIMIT: u64 = TOTAL_SUPPLY / 200; // 0.5%
+pub const DAILY_TRANSFER_LIMIT: u64 = TOTAL_SUPPLY / 200; // 0.5%
+pub const PROGRESSIVE_TAX_THRESHOLD: u64 = TOTAL_SUPPLY / 200; // 0.5%
+pub const TRANSACTION_TRACKING_THRESHOLD: u64 = TOTAL_SUPPLY / 1000; // 0.1%

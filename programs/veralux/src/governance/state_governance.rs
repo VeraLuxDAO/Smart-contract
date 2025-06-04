@@ -30,3 +30,15 @@ pub enum ProposalStatus {
     Approved,
     Rejected,
 }
+
+#[account]
+#[derive(InitSpace)]
+pub struct TransactionRecord {
+    pub last_txn_time: i64,
+    pub sell_buckets: [u64; 24],
+    pub transfer_buckets: [u64; 24],
+    pub current_bucket_index: u8,
+    pub bucket_start_time: i64,
+    pub sell_cooldown_start: i64,
+    pub transfer_cooldown_start: i64,
+}

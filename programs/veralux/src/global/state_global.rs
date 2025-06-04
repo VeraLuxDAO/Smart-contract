@@ -30,6 +30,14 @@ pub struct GlobalState {
     pub reduction_factors: [u64; 4],
     pub staking_rewards: [u64; 4],
     pub staking_tiers: [u64; 4],
+    pub max_sell_txn_limit: u64,
+    pub daily_sell_limit: u64,
+    pub max_transfer_limit: u64,
+    pub daily_transfer_limit: u64,
+
+    // DEX Program
+    #[max_len(5)]
+    pub dex_prograams: Vec<Pubkey>,
 
     // Whitelist
     #[max_len(50)]
@@ -62,4 +70,19 @@ pub struct GlobalIx {
     pub launch_timestamp: i64,
     pub initial_owners: Vec<Pubkey>,
     pub threshold: u8,
+    pub initial_dex_programs: Vec<Pubkey>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct PendingPause {
+    #[max_len(100)]
+    pub reason: Vec<u8>,
+    pub initiation_time: i64,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct PendingResume {
+    pub initiation_time: i64,
 }

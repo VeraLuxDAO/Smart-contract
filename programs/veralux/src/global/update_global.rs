@@ -1,11 +1,18 @@
 use anchor_lang::prelude::*;
 
 use crate::{
-    validate_multisig, GlobalUpdatedEvent, MultisigState, ReentrancyGuard, StartedPresaleEvent,
-    UpdateLaunchTimeEvent, VeraluxError, WhitelistAddedEvent, MULTISIG_SEED,
+    validate_multisig,
+    GlobalUpdatedEvent,
+    MultisigState,
+    ReentrancyGuard,
+    StartedPresaleEvent,
+    UpdateLaunchTimeEvent,
+    VeraluxError,
+    WhitelistAddedEvent,
+    MULTISIG_SEED,
 };
 
-use super::{GlobalIx, GlobalState};
+use super::{ GlobalIx, GlobalState };
 
 #[derive(Accounts)]
 pub struct UpdateGlobalCtx<'info> {
@@ -32,18 +39,14 @@ impl UpdateGlobalCtx<'_> {
 
         let multisig = &mut ctx.accounts.multisig;
 
-        require!(
-            multisig.owners.len() == 0,
-            VeraluxError::AlreadyUpdatedGlobal
-        );
+        require!(multisig.owners.len() == 0, VeraluxError::AlreadyUpdatedGlobal);
         require!(ix.threshold >= 2, VeraluxError::InvalidThreshold);
         require!(
             ix.initial_owners.len() >= 3 && ix.initial_owners.len() <= 5,
             VeraluxError::TooFewOwners
         );
 
-        let signer_keys: Vec<Pubkey> = ctx
-            .remaining_accounts
+        let signer_keys: Vec<Pubkey> = ctx.remaining_accounts
             .iter()
             .filter(|acc| acc.is_signer)
             .map(|acc| acc.key())
@@ -61,6 +64,7 @@ impl UpdateGlobalCtx<'_> {
         global.treasury_wallet = ix.treasury_wallet;
         global.lp_wallet = ix.lp_wallet;
         global.charity_wallet = ix.charity_wallet;
+        global.dex_prograams = ix.initial_dex_programs;
 
         multisig.owners = ix.initial_owners;
         multisig.threshold = ix.threshold;
@@ -78,8 +82,7 @@ impl UpdateGlobalCtx<'_> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
         let multisig = &mut ctx.accounts.multisig;
-        let signer_keys: Vec<Pubkey> = ctx
-            .remaining_accounts
+        let signer_keys: Vec<Pubkey> = ctx.remaining_accounts
             .iter()
             .filter(|acc| acc.is_signer)
             .map(|acc| acc.key())
@@ -92,7 +95,7 @@ impl UpdateGlobalCtx<'_> {
         ctx.accounts.global.presale_active = true;
 
         emit!(StartedPresaleEvent {
-            started_presale: ctx.accounts.global.presale_active
+            started_presale: ctx.accounts.global.presale_active,
         });
 
         Ok(())
@@ -102,8 +105,7 @@ impl UpdateGlobalCtx<'_> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
         let multisig = &mut ctx.accounts.multisig;
-        let signer_keys: Vec<Pubkey> = ctx
-            .remaining_accounts
+        let signer_keys: Vec<Pubkey> = ctx.remaining_accounts
             .iter()
             .filter(|acc| acc.is_signer)
             .map(|acc| acc.key())
@@ -118,7 +120,7 @@ impl UpdateGlobalCtx<'_> {
         global.presale_active = false;
 
         emit!(StartedPresaleEvent {
-            started_presale: global.presale_active
+            started_presale: global.presale_active,
         });
 
         Ok(())
@@ -128,8 +130,7 @@ impl UpdateGlobalCtx<'_> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
         let multisig = &mut ctx.accounts.multisig;
-        let signer_keys: Vec<Pubkey> = ctx
-            .remaining_accounts
+        let signer_keys: Vec<Pubkey> = ctx.remaining_accounts
             .iter()
             .filter(|acc| acc.is_signer)
             .map(|acc| acc.key())
@@ -142,16 +143,13 @@ impl UpdateGlobalCtx<'_> {
         let global = &mut ctx.accounts.global;
 
         require!(global.whitelist.len() < 50, VeraluxError::WhitelistFull);
-        require!(
-            !global.whitelist.contains(&whitelist),
-            VeraluxError::AlreadyWhitelisted
-        );
+        require!(!global.whitelist.contains(&whitelist), VeraluxError::AlreadyWhitelisted);
 
         global.whitelist.push(whitelist);
 
         emit!(WhitelistAddedEvent {
             address: whitelist,
-            total_whitelisted: global.whitelist.len() as u8
+            total_whitelisted: global.whitelist.len() as u8,
         });
 
         Ok(())
@@ -161,8 +159,7 @@ impl UpdateGlobalCtx<'_> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
 
         let multisig = &mut ctx.accounts.multisig;
-        let signer_keys: Vec<Pubkey> = ctx
-            .remaining_accounts
+        let signer_keys: Vec<Pubkey> = ctx.remaining_accounts
             .iter()
             .filter(|acc| acc.is_signer)
             .map(|acc| acc.key())
@@ -179,7 +176,7 @@ impl UpdateGlobalCtx<'_> {
         global.launch_timestamp = new_time_stamp;
 
         emit!(UpdateLaunchTimeEvent {
-            launchtime: global.launch_timestamp
+            launchtime: global.launch_timestamp,
         });
         Ok(())
     }

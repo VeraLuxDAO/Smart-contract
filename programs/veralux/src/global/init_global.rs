@@ -5,11 +5,15 @@ use crate::{
     ReentrancyGuard,
     VeraluxError,
     AIRDROP_POOL_PCT,
+    DAILY_SELL_LIMIT,
+    DAILY_TRANSFER_LIMIT,
     EMERGENCY_FUND_PCT,
     GLOBAL_SEED,
     GOVERNANCE_RESERVE_PCT,
     INITIAL_TAX_RATE,
     MARKETING_FUND_PCT,
+    MAX_SELL_TXN_LIMIT,
+    MAX_TRANSFER_LIMIT,
     MULTISIG_SEED,
     STAKING_POOL_PCT,
     STAKING_REWARDS,
@@ -79,6 +83,10 @@ impl InitGlobalCtx<'_> {
         global.reduction_factors = [512, 640, 800, 1000];
         global.staking_rewards = STAKING_REWARDS;
         global.staking_tiers = STAKING_TIERS;
+        global.max_sell_txn_limit = MAX_SELL_TXN_LIMIT;
+        global.daily_sell_limit = DAILY_SELL_LIMIT;
+        global.max_transfer_limit = MAX_TRANSFER_LIMIT;
+        global.daily_transfer_limit = DAILY_TRANSFER_LIMIT;
 
         let treasury = &mut ctx.accounts.treasury;
         let total_treasury = TREASURY_RESERVE;

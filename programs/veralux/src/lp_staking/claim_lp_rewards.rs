@@ -2,22 +2,17 @@ use anchor_lang::prelude::*;
 use anchor_spl::token::{ self, Token, TokenAccount };
 
 use crate::{
-    get_pending_rewards,
-    ClaimRewardsEvent,
+    ClaimLPRewardsEvent,
     GlobalState,
+    LPStaker,
     NoRewardsEvent,
     ReentrancyGuard,
-    Treasury,
     VeraluxError,
-    STAKER_SEED,
-    STAKING_DURATIONS,
-    TREASURY_SEED,
+    LP_STAKER_SEED,
 };
 
-use super::Staker;
-
 #[derive(Accounts)]
-pub struct ClaimRewardsCtx<'info> {
+pub struct ClaimLPRewardsCtx<'info> {
     pub authority: Signer<'info>,
 
     #[account(mut)]
@@ -32,17 +27,10 @@ pub struct ClaimRewardsCtx<'info> {
 
     #[account(
         mut,
-        seeds = [STAKER_SEED, user.key().as_ref()],
-        bump,
+        seeds = [LP_STAKER_SEED, user.key().as_ref()],
+        bump
     )]
-    pub staker: Account<'info, Staker>,
-
-    #[account(
-        mut,
-        seeds = [TREASURY_SEED, authority.key().as_ref()],
-        bump,
-    )]
-    pub treasury: Account<'info, Treasury>,
+    pub lp_staker: Account<'info, LPStaker>,
 
     #[account(
         mut,
@@ -59,37 +47,25 @@ pub struct ClaimRewardsCtx<'info> {
     token_program: Program<'info, Token>,
 }
 
-impl ClaimRewardsCtx<'_> {
-    pub fn handler(ctx: Context<ClaimRewardsCtx>) -> Result<()> {
+impl ClaimLPRewardsCtx<'_> {
+    pub fn handler(ctx: Context<ClaimLPRewardsCtx>) -> Result<()> {
         let guard = ReentrancyGuard::new(&mut ctx.accounts.global);
         drop(guard);
 
         let now = Clock::get()?.unix_timestamp;
-        let staker = &mut ctx.accounts.staker;
-        let global = &mut ctx.accounts.global;
-        let treasury = &mut ctx.accounts.treasury;
+        let lp_staker = &mut ctx.accounts.lp_staker;
 
-        let time_staked = now
-            .checked_sub(staker.start_time)
-            .ok_or(VeraluxError::ArithmeticOverflow)?;
-        require!(
-            time_staked >= STAKING_DURATIONS[staker.tier as usize],
-            VeraluxError::LockPeriodNotMet
-        );
-
-        let rewards = get_pending_rewards(global, staker, treasury, now)?;
+        require!(now - lp_staker.last_action_time >= 7 * 86400, VeraluxError::LockPeriodNotMet);
+        let rewards = lp_staker.unclaimed_rewards;
         if rewards == 0 {
             emit!(NoRewardsEvent {
                 user: ctx.accounts.user.key(),
-                reason: "No rewards available".to_string(),
+                reason: "No unclaimed rewards available".to_string(),
             });
             return Ok(());
         }
 
-        require!(treasury.staking_pool >= rewards, VeraluxError::InsufficientStakingPoolFunds);
-        treasury.staking_pool = treasury.staking_pool
-            .checked_sub(rewards)
-            .ok_or(VeraluxError::ArithmeticOverflow)?;
+        lp_staker.unclaimed_rewards = 0;
 
         token::transfer(
             CpiContext::new(ctx.accounts.token_program.to_account_info(), token::Transfer {
@@ -100,9 +76,7 @@ impl ClaimRewardsCtx<'_> {
             rewards
         )?;
 
-        staker.last_claim = now;
-
-        emit!(ClaimRewardsEvent {
+        emit!(ClaimLPRewardsEvent {
             user: ctx.accounts.user.key(),
             amount: rewards,
         });

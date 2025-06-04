@@ -79,3 +79,42 @@ pub struct UnstakeEvent {
     pub user: Pubkey,
     pub amount: u64,
 }
+
+#[event]
+pub struct StakeLPEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct UnstakeLPEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct ClaimLPRewardsEvent {
+    pub user: Pubkey,
+    pub amount: u64,
+}
+
+#[event]
+pub struct PauseInitiated {
+    pub initiation_time: i64,
+}
+
+#[event]
+pub struct PauseEvent {
+    pub timestamp: i64,
+    pub reason: String,
+}
+
+#[event]
+pub struct ResumeInitiated {
+    pub initiation_time: i64,
+}
+
+#[event]
+pub struct ResumeEvent {
+    pub timestamp: i64,
+}
